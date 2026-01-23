@@ -1,0 +1,68 @@
+[gd_scene load_steps=7 format=3 uid="uid://b7yib17a8uut7"]
+
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_at8va"]
+[ext_resource type="Script" uid="uid://cy8502riqhvo6" path="res://scripts/ui/map_row.gd" id="1_cg8xk"]
+[ext_resource type="PackedScene" uid="uid://uhe6twg0cfbr" path="res://ui/difficulty_icon.tscn" id="2_xjru7"]
+[ext_resource type="Texture2D" uid="uid://r283sjscesrm" path="res://graphics/ui/8px/crown.png" id="4_u6vfs"]
+[ext_resource type="Texture2D" uid="uid://bos6tlgluxy8l" path="res://graphics/ui/8px/heart.png" id="5_jptsa"]
+[ext_resource type="Texture2D" uid="uid://dwu6yp5c7wvlk" path="res://graphics/ui/8px/edit.png" id="5_wfl1r"]
+
+[node name="MapRow" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 192.0
+offset_bottom = 23.0
+theme = ExtResource("1_at8va")
+script = ExtResource("1_cg8xk")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 192.0
+offset_bottom = 24.0
+mouse_filter = 2
+
+[node name="DifficultyIcon" parent="Panel" instance=ExtResource("2_xjru7")]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 20.0
+offset_bottom = 20.0
+
+[node name="Creator" type="Label" parent="Panel"]
+modulate = Color(0.581033, 0.58103293, 0.5810329, 1)
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 0
+offset_left = 22.0
+offset_top = 12.0
+offset_right = 168.0
+offset_bottom = 20.0
+
+[node name="HBox" type="HBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 3.0
+offset_right = 176.0
+offset_bottom = 13.0
+
+[node name="MapTitle" type="Label" parent="Panel/HBox"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+text = "Failed to Load!"
+
+[node name="IsRanked" type="TextureRect" parent="Panel/HBox"]
+visible = false
+layout_mode = 2
+texture = ExtResource("4_u6vfs")
+stretch_mode = 2
+
+[node name="IsLiked" type="TextureRect" parent="Panel/HBox"]
+visible = false
+layout_mode = 2
+texture = ExtResource("5_jptsa")
+stretch_mode = 2
+
+[node name="IsWIP" type="TextureRect" parent="Panel/HBox"]
+visible = false
+layout_mode = 2
+texture = ExtResource("5_wfl1r")
+stretch_mode = 2

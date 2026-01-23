@@ -1,0 +1,75 @@
+[gd_scene load_steps=7 format=3 uid="uid://ore1bbwl67gk"]
+
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_m5vwo"]
+[ext_resource type="Script" uid="uid://dn25igyfb8oej" path="res://scripts/ui/popup_panel.gd" id="1_popup"]
+[ext_resource type="PackedScene" uid="uid://dli2pb8ippthn" path="res://ui/button_big.tscn" id="2_h8tf7"]
+[ext_resource type="Texture2D" uid="uid://inl8krwstv4p" path="res://graphics/ui/16px/file_add.png" id="3_j4fk4"]
+[ext_resource type="PackedScene" uid="uid://doqsgsvd3lpa2" path="res://ui/button_small.tscn" id="4_bjt2m"]
+[ext_resource type="Texture2D" uid="uid://cbjiccv4nde5x" path="res://graphics/ui/8px/simple/x.png" id="5_c4fkq"]
+
+[node name="CreateNewMap" type="Control"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -192.0
+offset_bottom = -79.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_m5vwo")
+script = ExtResource("1_popup")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 101.0
+
+[node name="Header" type="Label" parent="."]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 6.0
+offset_right = 95.0
+offset_bottom = 13.0
+text = "create new map"
+
+[node name="Confirm" parent="." instance=ExtResource("2_h8tf7")]
+layout_mode = 0
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 52.16
+offset_top = 73.06
+offset_right = 76.16
+offset_bottom = 97.06
+icon_texture = ExtResource("3_j4fk4")
+
+[node name="CloseButton" parent="." instance=ExtResource("4_bjt2m")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 108.0
+offset_top = 4.0
+offset_right = 124.0
+offset_bottom = 20.0
+icon_texture = ExtResource("5_c4fkq")
+
+[node name="TitleLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 45.0
+offset_top = 22.0
+offset_right = 85.0
+offset_bottom = 29.0
+text = "title"
+horizontal_alignment = 1
+
+[node name="LineEdit" type="LineEdit" parent="."]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 32.0
+offset_right = 118.0
+offset_bottom = 39.0
+placeholder_text = "world name"
+alignment = 1
+max_length = 20

@@ -1,0 +1,65 @@
+[gd_scene load_steps=8 format=3 uid="uid://cch35x3210bth"]
+
+[ext_resource type="Script" uid="uid://dojna2fa0e63x" path="res://scripts/map/map_world.gd" id="1_world"]
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="2_iw7op"]
+[ext_resource type="PackedScene" uid="uid://0lkgmbeolltc" path="res://ui/panels/pause_menu.tscn" id="3_8ijdc"]
+[ext_resource type="Script" uid="uid://b8yybj7rf263y" path="res://scripts/map/map_background.gd" id="4_bg"]
+[ext_resource type="Script" uid="uid://brhd4il8y0v1l" path="res://scripts/map/map_preview.gd" id="5_preview"]
+[ext_resource type="Texture2D" uid="uid://c0kfoeksewc0g" path="res://graphics/backgrounds/mountain.png" id="6_bgtex"]
+[ext_resource type="PackedScene" uid="uid://dl7caoqabrnib" path="res://ui/panels/auth_panel.tscn" id="7_auth"]
+
+[node name="MapPlay" type="Node2D"]
+script = ExtResource("1_world")
+
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("4_bg")
+show_preview = false
+
+[node name="Fallback" type="Sprite2D" parent="Background"]
+texture_filter = 1
+texture = ExtResource("6_bgtex")
+
+[node name="MapPreview" type="Node2D" parent="Background"]
+script = ExtResource("5_preview")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Hud" type="Control" parent="UI"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 0
+offset_right = 320.0
+offset_bottom = 180.0
+mouse_filter = 1
+theme = ExtResource("2_iw7op")
+
+[node name="Dim" type="ColorRect" parent="UI"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+[node name="DeathFade" type="ColorRect" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+[node name="PauseMenu" parent="UI" instance=ExtResource("3_8ijdc")]
+process_mode = 2
+visible = false
+offset_left = 112.0
+offset_top = 64.0
+offset_right = 208.0
+offset_bottom = 128.0
+
+[node name="AuthPanel" parent="UI" instance=ExtResource("7_auth")]
+visible = false
+offset_left = 93.0
+offset_top = 45.0
+offset_right = 93.0
+offset_bottom = 45.0
+dim_path = NodePath("../Dim")

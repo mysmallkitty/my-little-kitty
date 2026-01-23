@@ -1,0 +1,26 @@
+[gd_scene load_steps=5 format=3 uid="uid://doqsgsvd3lpa2"]
+
+[ext_resource type="Script" uid="uid://fvm7qedn02so" path="res://scripts/ui/icon_button.gd" id="1_icon_btn"]
+[ext_resource type="Texture2D" uid="uid://c4ukqbq1ge61w" path="res://graphics/ui/buttons/button_small_normal.png" id="1_3qu1m"]
+[ext_resource type="Texture2D" uid="uid://cbtwbw8mp3qcw" path="res://graphics/ui/buttons/button_small_pressed.png" id="2_j8fwe"]
+[ext_resource type="Texture2D" uid="uid://dun7j07dum5p0" path="res://graphics/ui/buttons/button_small_hover.png" id="3_1oov3"]
+
+[node name="TextureButton" type="TextureButton"]
+offset_right = 16.0
+offset_bottom = 16.0
+focus_mode = 0
+texture_normal = ExtResource("1_3qu1m")
+texture_pressed = ExtResource("2_j8fwe")
+texture_hover = ExtResource("3_1oov3")
+texture_disabled = ExtResource("2_j8fwe")
+texture_focused = ExtResource("3_1oov3")
+script = ExtResource("1_icon_btn")
+
+[node name="Icon" type="TextureRect" parent="."]
+texture_filter = 1
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 12.0
+offset_bottom = 12.0

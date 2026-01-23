@@ -1,0 +1,116 @@
+[gd_scene load_steps=15 format=3 uid="uid://cjns0rcmiguvw"]
+
+[ext_resource type="PackedScene" uid="uid://cfcvro2mtr04v" path="res://ui/panels/profile_panel.tscn" id="1_6g5u2"]
+[ext_resource type="Texture2D" uid="uid://c0kfoeksewc0g" path="res://graphics/backgrounds/mountain.png" id="1_qo68t"]
+[ext_resource type="Script" uid="uid://b18q2cf72e7ae" path="res://scripts/map/map_select.gd" id="1_select"]
+[ext_resource type="Script" uid="uid://b8yybj7rf263y" path="res://scripts/map/map_background.gd" id="1_xd33q"]
+[ext_resource type="Script" uid="uid://brhd4il8y0v1l" path="res://scripts/map/map_preview.gd" id="2_preview"]
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="2_theme"]
+[ext_resource type="PackedScene" uid="uid://0kck1uixnai1" path="res://roots/list_viewport.tscn" id="3_nk1er"]
+[ext_resource type="PackedScene" uid="uid://dli2pb8ippthn" path="res://ui/button_big.tscn" id="4_6g5u2"]
+[ext_resource type="PackedScene" uid="uid://bv0egmoo6ylfl" path="res://ui/panels/detail_panel.tscn" id="5_6g5u2"]
+[ext_resource type="Texture2D" uid="uid://be8l1e4cnx28i" path="res://graphics/ui/16px/nav_prev.png" id="5_nk1er"]
+[ext_resource type="PackedScene" uid="uid://cw66kdog6sxqr" path="res://ui/panels/map_stats.tscn" id="7_n1odv"]
+[ext_resource type="PackedScene" uid="uid://bjdhvw45vkuxs" path="res://ui/panels/leader_board.tscn" id="8_tx2k2"]
+[ext_resource type="PackedScene" uid="uid://dl7caoqabrnib" path="res://ui/panels/auth_panel.tscn" id="9_auth"]
+[ext_resource type="PackedScene" uid="uid://bpfpfirn2b13r" path="res://ui/panels/user_profile_detail.tscn" id="10_profile"]
+
+[node name="MapSelectPlay" type="Node2D"]
+script = ExtResource("1_select")
+
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("1_xd33q")
+
+[node name="Fallback" type="Sprite2D" parent="Background"]
+texture_filter = 1
+position = Vector2(160, 90)
+texture = ExtResource("1_qo68t")
+
+[node name="MapPreview" type="Node2D" parent="Background"]
+script = ExtResource("2_preview")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Hud" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 320.0
+offset_bottom = 180.0
+mouse_filter = 2
+theme = ExtResource("2_theme")
+
+[node name="ProfilePanel" parent="UI/Hud" instance=ExtResource("1_6g5u2")]
+layout_mode = 0
+
+[node name="ListViewport" parent="UI/Hud" instance=ExtResource("3_nk1er")]
+layout_mode = 0
+offset_left = 170.0
+offset_right = 320.0
+
+[node name="SearchButton(WIP)" parent="UI/Hud" instance=ExtResource("4_6g5u2")]
+layout_mode = 1
+offset_left = 276.16
+offset_top = -15.940001
+offset_right = 300.16
+offset_bottom = 8.059999
+
+[node name="Back" parent="UI/Hud" instance=ExtResource("4_6g5u2")]
+layout_mode = 0
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 8.0
+offset_top = 144.0
+offset_right = 32.0
+offset_bottom = 168.0
+icon_texture = ExtResource("5_nk1er")
+
+[node name="Dim" type="ColorRect" parent="UI"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+[node name="DetailPanel" parent="UI" instance=ExtResource("5_6g5u2")]
+offset_left = 8.0
+offset_top = 38.0
+offset_right = 152.0
+offset_bottom = 114.0
+
+[node name="MapStats" parent="UI" instance=ExtResource("7_n1odv")]
+visible = false
+offset_left = 39.0
+offset_top = 117.0
+offset_right = 143.0
+offset_bottom = 174.0
+dim_path = NodePath("../Dim")
+slide_dir = Vector2(0, 1)
+
+[node name="LeaderBoard" parent="UI" instance=ExtResource("8_tx2k2")]
+visible = false
+anchors_preset = 0
+anchor_left = 0.0
+anchor_right = 0.0
+offset_left = 85.0
+offset_top = 29.0
+offset_right = 213.0
+offset_bottom = 180.0
+slide_dir = Vector2(0, 1)
+
+[node name="AuthPanel" parent="UI" instance=ExtResource("9_auth")]
+visible = false
+offset_left = 93.0
+offset_top = 45.0
+offset_right = 93.0
+offset_bottom = 45.0
+dim_path = NodePath("../Dim")
+
+[node name="UserProfileDetail" parent="UI" instance=ExtResource("10_profile")]
+visible = false
+offset_left = 8.0
+offset_top = 38.0
+dim_path = NodePath("../Dim")

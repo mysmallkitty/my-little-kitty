@@ -1,0 +1,29 @@
+[gd_resource type="Theme" load_steps=6 format=3 uid="uid://d3qrjbdprxnyr"]
+
+[ext_resource type="StyleBox" uid="uid://bsihf1gxw4mcx" path="res://ui/theme/style_box_empty.tres" id="1_7181q"]
+[ext_resource type="Texture2D" uid="uid://cbjiccv4nde5x" path="res://graphics/ui/8px/simple/x.png" id="2_cms1n"]
+[ext_resource type="FontFile" uid="uid://buy41f1xmjgsc" path="res://graphics/aseprite.otf" id="3_f2hgy"]
+[ext_resource type="StyleBox" uid="uid://cafusxbvxyy3k" path="res://ui/theme/textedit.tres" id="3_g4415"]
+[ext_resource type="StyleBox" uid="uid://0fx8m74q1h85" path="res://ui/theme/panel.tres" id="4_m0ati"]
+
+[resource]
+default_font = ExtResource("3_f2hgy")
+default_font_size = 7
+Button/colors/font_hover_color = Color(0.8148845, 0.924537, 0.99378735, 1)
+Button/colors/font_hover_pressed_color = Color(0.46317518, 0.56502473, 0.7353437, 1)
+Button/colors/font_outline_color = Color(0, 0, 0, 0)
+Button/colors/font_pressed_color = Color(0.16470589, 0.1882353, 0.3019608, 1)
+Button/styles/disabled = ExtResource("1_7181q")
+Button/styles/focus = ExtResource("1_7181q")
+Button/styles/hover = ExtResource("1_7181q")
+Button/styles/hover_mirrored = ExtResource("1_7181q")
+Button/styles/normal = ExtResource("1_7181q")
+Button/styles/pressed = ExtResource("1_7181q")
+LineEdit/colors/caret_color = Color(0.95, 0.95, 0.95, 1)
+LineEdit/colors/font_outline_color = Color(0, 0, 0, 1)
+LineEdit/font_sizes/font_size = 7
+LineEdit/icons/clear = ExtResource("2_cms1n")
+LineEdit/styles/focus = ExtResource("3_g4415")
+LineEdit/styles/normal = ExtResource("3_g4415")
+LineEdit/styles/read_only = ExtResource("3_g4415")
+Panel/styles/panel = ExtResource("4_m0ati")

@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=3 uid="uid://bdwls46xth4r2"]
+
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_f8p4b"]
+[ext_resource type="Texture2D" uid="uid://c4uefw6540xi0" path="res://graphics/ui/panels/alert/warning.png" id="2_p78tm"]
+
+[node name="Alert" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 161.0
+offset_bottom = 16.0
+theme = ExtResource("1_f8p4b")
+
+[node name="panel" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 160.0
+offset_bottom = 16.0
+texture = ExtResource("2_p78tm")
+
+[node name="message" type="Label" parent="."]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 4.0
+offset_right = 152.0
+offset_bottom = 11.0
+text = "can't connect to server"
+horizontal_alignment = 1

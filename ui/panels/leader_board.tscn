@@ -1,0 +1,62 @@
+[gd_scene load_steps=6 format=3 uid="uid://bjdhvw45vkuxs"]
+
+[ext_resource type="Script" uid="uid://dn25igyfb8oej" path="res://scripts/ui/popup_panel.gd" id="1_popup"]
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_q4upr"]
+[ext_resource type="Texture2D" uid="uid://r283sjscesrm" path="res://graphics/ui/8px/crown.png" id="2_5dgu3"]
+[ext_resource type="PackedScene" uid="uid://doqsgsvd3lpa2" path="res://ui/button_small.tscn" id="2_i42ir"]
+[ext_resource type="Texture2D" uid="uid://cbjiccv4nde5x" path="res://graphics/ui/8px/simple/x.png" id="3_axjh2"]
+
+[node name="LeaderBoard" type="Control"]
+clip_contents = true
+layout_mode = 3
+anchor_left = 0.2
+anchor_right = 0.2
+offset_left = -64.0
+offset_right = 64.0
+offset_bottom = 151.0
+theme = ExtResource("1_q4upr")
+script = ExtResource("1_popup")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 128.0
+offset_bottom = 180.0
+
+[node name="RecordContainer" type="Control" parent="Panel"]
+clip_contents = true
+anchors_preset = 0
+offset_left = 8.0
+offset_top = 24.0
+offset_right = 120.0
+offset_bottom = 205.0
+
+[node name="Label" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 14.0
+offset_right = 127.0
+offset_bottom = 21.0
+text = "leaderboard"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CloseButton" parent="Panel" instance=ExtResource("2_i42ir")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 108.0
+offset_top = 4.0
+offset_right = 124.5
+offset_bottom = 20.0
+icon_texture = ExtResource("3_axjh2")
+
+[node name="no_records_yet" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 61.0
+offset_right = 97.0
+offset_bottom = 68.0
+text = "no records yet !"
+
+[node name="Crown" type="Sprite2D" parent="."]
+position = Vector2(64, 8)
+texture = ExtResource("2_5dgu3")

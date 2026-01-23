@@ -1,0 +1,75 @@
+[gd_scene load_steps=8 format=3 uid="uid://cw66kdog6sxqr"]
+
+[ext_resource type="Script" uid="uid://dn25igyfb8oej" path="res://scripts/ui/popup_panel.gd" id="1_popup"]
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_tu1jp"]
+[ext_resource type="Texture2D" uid="uid://dwlfytf3pw08i" path="res://graphics/ui/8px/play.png" id="2_tu1jp"]
+[ext_resource type="Texture2D" uid="uid://b4v5ol2j3hr8o" path="res://graphics/ui/8px/death.png" id="4_185qc"]
+[ext_resource type="PackedScene" uid="uid://doqsgsvd3lpa2" path="res://ui/button_small.tscn" id="5_665uh"]
+[ext_resource type="Texture2D" uid="uid://cbjiccv4nde5x" path="res://graphics/ui/8px/simple/x.png" id="6_1l3eg"]
+[ext_resource type="Texture2D" uid="uid://ctd672p5crq2a" path="res://graphics/ui/8px/flag.png" id="7_ff4tj"]
+
+[node name="MapStats" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 104.0
+offset_bottom = 56.0
+theme = ExtResource("1_tu1jp")
+script = ExtResource("1_popup")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 104.0
+offset_bottom = 56.0
+
+[node name="Header" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 9.0
+offset_right = 28.0
+offset_bottom = 16.0
+text = "stats"
+
+[node name="Play" type="Sprite2D" parent="Panel"]
+position = Vector2(12, 24)
+texture = ExtResource("2_tu1jp")
+
+[node name="PlayCount" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 21.0
+offset_right = 96.0
+offset_bottom = 28.0
+text = "123123"
+
+[node name="Death" type="Sprite2D" parent="Panel"]
+position = Vector2(12, 35)
+texture = ExtResource("4_185qc")
+
+[node name="DeathCount" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 32.0
+offset_right = 96.0
+offset_bottom = 39.0
+text = "123123"
+
+[node name="Flag" type="Sprite2D" parent="Panel"]
+position = Vector2(12, 46)
+texture = ExtResource("7_ff4tj")
+
+[node name="BestTime" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 43.0
+offset_right = 96.0
+offset_bottom = 50.0
+text = "00:00"
+
+[node name="CloseButton" parent="Panel" instance=ExtResource("5_665uh")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 83.0
+offset_top = 5.0
+offset_right = 99.0
+offset_bottom = 21.0
+icon_texture = ExtResource("6_1l3eg")

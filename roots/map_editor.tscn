@@ -1,0 +1,191 @@
+[gd_scene load_steps=19 format=3 uid="uid://p5b6ihjcngrx"]
+
+[ext_resource type="Script" uid="uid://bfd13jq44qcia" path="res://scripts/map/editor/map_editor.gd" id="1_rifoq"]
+[ext_resource type="Script" uid="uid://y3jkwl670psv" path="res://scripts/map/editor/map_renderer.gd" id="2_hamae"]
+[ext_resource type="Texture2D" uid="uid://c0kfoeksewc0g" path="res://graphics/backgrounds/mountain.png" id="2_j4yp4"]
+[ext_resource type="Script" uid="uid://c66qcvkfveuhn" path="res://scripts/map/editor/map_editor_overlay.gd" id="3_j4yp4"]
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="5_j4yp4"]
+[ext_resource type="PackedScene" uid="uid://dli2pb8ippthn" path="res://ui/button_big.tscn" id="6_c4ihn"]
+[ext_resource type="Texture2D" uid="uid://cwk7akvfwbc70" path="res://graphics/ui/16px/editor/tools/pen.png" id="7_vyxn7"]
+[ext_resource type="Texture2D" uid="uid://dah8dxvmnwmjp" path="res://graphics/ui/16px/editor/tools/square.png" id="8_v4g8l"]
+[ext_resource type="Texture2D" uid="uid://csc0nrbfgbp6h" path="res://graphics/ui/16px/editor/tools/chunk.png" id="9_vyxn7"]
+[ext_resource type="Texture2D" uid="uid://cujqnw5ymqke" path="res://graphics/ui/16px/editor/tabs/terrain.png" id="10_s8562"]
+[ext_resource type="Texture2D" uid="uid://dwp22smi0hlh8" path="res://graphics/ui/16px/editor/tabs/bg.png" id="10_v4g8l"]
+[ext_resource type="Texture2D" uid="uid://pr5u75wlv4ue" path="res://graphics/ui/16px/editor/tabs/object.png" id="11_fcxql"]
+[ext_resource type="Texture2D" uid="uid://cih3tbtjksr5u" path="res://graphics/ui/16px/editor/tabs/block.png" id="12_amvjq"]
+[ext_resource type="Texture2D" uid="uid://drgeyk14lojrp" path="res://graphics/ui/16px/editor/tabs/hazard.png" id="14_njwoh"]
+[ext_resource type="PackedScene" uid="uid://doqsgsvd3lpa2" path="res://ui/button_small.tscn" id="15_fcxql"]
+[ext_resource type="Texture2D" uid="uid://c824e25wk1lcc" path="res://graphics/ui/8px/simple/menu.png" id="16_amvjq"]
+[ext_resource type="Texture2D" uid="uid://dpljqlmuqxyjk" path="res://graphics/ui/8px/save.png" id="17_njwoh"]
+[ext_resource type="PackedScene" uid="uid://c4s5f70rcr3dw" path="res://ui/panels/editor_menu.tscn" id="18_editor_menu"]
+
+[node name="MapEditor" type="Node2D"]
+script = ExtResource("1_rifoq")
+
+[node name="EditorCamera" type="Camera2D" parent="."]
+
+[node name="Fallback" type="Sprite2D" parent="EditorCamera"]
+texture_filter = 1
+texture = ExtResource("2_j4yp4")
+
+[node name="Renderer" type="Node2D" parent="."]
+script = ExtResource("2_hamae")
+
+[node name="PreviewLayer" type="TileMapLayer" parent="."]
+z_index = 100
+texture_filter = 1
+
+[node name="Overlay" type="Node2D" parent="."]
+script = ExtResource("3_j4yp4")
+editor_path = NodePath("..")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Hud" type="Control" parent="UI"]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 0
+offset_right = 320.0
+offset_bottom = 180.0
+mouse_filter = 1
+theme = ExtResource("5_j4yp4")
+
+[node name="Tools" type="Control" parent="UI/Hud"]
+anchors_preset = 0
+offset_left = 8.0
+offset_top = 40.0
+offset_right = 32.0
+offset_bottom = 177.0
+
+[node name="PenButton" parent="UI/Hud/Tools" instance=ExtResource("6_c4ihn")]
+layout_mode = 0
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = -1.0
+offset_top = 48.0
+offset_right = 23.0
+offset_bottom = 72.0
+icon_texture = ExtResource("7_vyxn7")
+
+[node name="SquareButton" parent="UI/Hud/Tools" instance=ExtResource("6_c4ihn")]
+layout_mode = 0
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = -1.0
+offset_top = 80.0
+offset_right = 23.0
+offset_bottom = 104.0
+icon_texture = ExtResource("8_v4g8l")
+
+[node name="ChunkButton" parent="UI/Hud/Tools" instance=ExtResource("6_c4ihn")]
+layout_mode = 0
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 0.0
+offset_top = 112.0
+offset_right = 24.0
+offset_bottom = 136.0
+icon_texture = ExtResource("9_vyxn7")
+
+[node name="Tab" type="Panel" parent="UI/Hud"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 0
+offset_left = 48.0
+offset_top = 147.0
+offset_right = 136.0
+offset_bottom = 173.0
+
+[node name="Terrain" type="TextureButton" parent="UI/Hud/Tab"]
+layout_mode = 0
+offset_left = 5.0
+offset_right = 21.0
+offset_bottom = 16.0
+texture_normal = ExtResource("10_s8562")
+
+[node name="Object" type="TextureButton" parent="UI/Hud/Tab"]
+layout_mode = 0
+offset_left = 21.0
+offset_right = 37.0
+offset_bottom = 16.0
+texture_normal = ExtResource("11_fcxql")
+
+[node name="Block" type="TextureButton" parent="UI/Hud/Tab"]
+layout_mode = 0
+offset_left = 37.0
+offset_right = 53.0
+offset_bottom = 16.0
+texture_normal = ExtResource("12_amvjq")
+
+[node name="Deco" type="TextureButton" parent="UI/Hud/Tab"]
+layout_mode = 0
+offset_left = 53.0
+offset_right = 69.0
+offset_bottom = 16.0
+texture_normal = ExtResource("10_v4g8l")
+
+[node name="Hazard" type="TextureButton" parent="UI/Hud/Tab"]
+layout_mode = 0
+offset_left = 68.0
+offset_right = 84.0
+offset_bottom = 16.0
+texture_normal = ExtResource("14_njwoh")
+
+[node name="Pallete" type="Panel" parent="UI/Hud"]
+layout_mode = 0
+offset_left = 40.0
+offset_top = 142.0
+offset_right = 296.0
+offset_bottom = 184.0
+
+[node name="PaletteGrid" type="Control" parent="UI/Hud/Pallete"]
+anchors_preset = 0
+offset_left = 8.0
+offset_top = 5.0
+offset_right = 248.0
+offset_bottom = 34.0
+
+[node name="MenuButton" parent="UI/Hud" instance=ExtResource("15_fcxql")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 296.0
+offset_top = 8.0
+offset_right = 312.0
+offset_bottom = 24.0
+icon_texture = ExtResource("16_amvjq")
+
+[node name="SaveButton" parent="UI/Hud" instance=ExtResource("15_fcxql")]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 276.0
+offset_top = 8.0
+offset_right = 292.0
+offset_bottom = 24.0
+icon_texture = ExtResource("17_njwoh")
+
+[node name="Dim" type="ColorRect" parent="UI"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+[node name="EditorMenu" parent="UI" instance=ExtResource("18_editor_menu")]
+anchors_preset = -1
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 96.0
+offset_top = 33.0
+offset_right = 224.0
+offset_bottom = 136.0
+dim_path = NodePath("../Dim")

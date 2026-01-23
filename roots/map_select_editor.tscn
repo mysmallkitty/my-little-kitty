@@ -1,0 +1,112 @@
+[gd_scene load_steps=15 format=3 uid="uid://on77u71y1efl"]
+
+[ext_resource type="Texture2D" uid="uid://c0kfoeksewc0g" path="res://graphics/backgrounds/mountain.png" id="1_3v6hg"]
+[ext_resource type="Script" uid="uid://b8yybj7rf263y" path="res://scripts/map/map_background.gd" id="1_jqn88"]
+[ext_resource type="Script" uid="uid://b18q2cf72e7ae" path="res://scripts/map/map_select.gd" id="1_select"]
+[ext_resource type="PackedScene" uid="uid://cfcvro2mtr04v" path="res://ui/panels/profile_panel.tscn" id="2_3v6hg"]
+[ext_resource type="Script" uid="uid://brhd4il8y0v1l" path="res://scripts/map/map_preview.gd" id="2_preview"]
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="2_theme"]
+[ext_resource type="PackedScene" uid="uid://dli2pb8ippthn" path="res://ui/button_big.tscn" id="3_icon_btn"]
+[ext_resource type="PackedScene" uid="uid://0kck1uixnai1" path="res://roots/list_viewport.tscn" id="3_sca2u"]
+[ext_resource type="Texture2D" uid="uid://be8l1e4cnx28i" path="res://graphics/ui/16px/nav_prev.png" id="5_06gis"]
+[ext_resource type="PackedScene" uid="uid://c3qaqw6c26p23" path="res://ui/panels/detail_panel_editor.tscn" id="6_1cb6a"]
+[ext_resource type="Texture2D" uid="uid://inl8krwstv4p" path="res://graphics/ui/16px/file_add.png" id="10_ibkux"]
+[ext_resource type="PackedScene" uid="uid://ore1bbwl67gk" path="res://ui/panels/create_new_map.tscn" id="11_1gbyj"]
+[ext_resource type="PackedScene" uid="uid://dl7caoqabrnib" path="res://ui/panels/auth_panel.tscn" id="12_auth"]
+[ext_resource type="PackedScene" uid="uid://bpfpfirn2b13r" path="res://ui/panels/user_profile_detail.tscn" id="13_profile"]
+
+[node name="MapSelectPlay" type="Node2D"]
+script = ExtResource("1_select")
+mode = "editor"
+
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("1_jqn88")
+
+[node name="Fallback" type="Sprite2D" parent="Background"]
+texture_filter = 1
+position = Vector2(160, 90)
+texture = ExtResource("1_3v6hg")
+
+[node name="MapPreview" type="Node2D" parent="Background"]
+script = ExtResource("2_preview")
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="Hud" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 320.0
+offset_bottom = 180.0
+mouse_filter = 2
+theme = ExtResource("2_theme")
+
+[node name="ProfilePanel" parent="UI/Hud" instance=ExtResource("2_3v6hg")]
+layout_mode = 0
+
+[node name="ListViewport" parent="UI/Hud" instance=ExtResource("3_sca2u")]
+layout_mode = 0
+offset_left = 170.0
+offset_right = 320.0
+
+[node name="Back" parent="UI/Hud" instance=ExtResource("3_icon_btn")]
+layout_mode = 0
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 8.0
+offset_top = 144.0
+offset_right = 32.0
+offset_bottom = 168.0
+icon_texture = ExtResource("5_06gis")
+
+[node name="Back2" parent="UI/Hud" instance=ExtResource("3_icon_btn")]
+layout_mode = 0
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 40.0
+offset_top = 144.0
+offset_right = 64.0
+offset_bottom = 168.0
+icon_texture = ExtResource("10_ibkux")
+
+[node name="DetailPanel" parent="UI/Hud" instance=ExtResource("6_1cb6a")]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 38.0
+offset_right = 152.0
+offset_bottom = 114.0
+
+[node name="Dim" type="ColorRect" parent="UI"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0, 0, 0, 0)
+
+[node name="CreateNewMap" parent="UI" instance=ExtResource("11_1gbyj")]
+offset_left = 93.0
+offset_top = 46.0
+offset_right = -99.0
+offset_bottom = -33.0
+dim_path = NodePath("../Dim")
+slide_dir = Vector2(0, 1)
+
+[node name="AuthPanel" parent="UI" instance=ExtResource("12_auth")]
+visible = false
+offset_left = 93.0
+offset_top = 45.0
+offset_right = 93.0
+offset_bottom = 45.0
+dim_path = NodePath("../Dim")
+
+[node name="UserProfileDetail" parent="UI" instance=ExtResource("13_profile")]
+visible = false
+offset_left = 8.0
+offset_top = 38.0
+dim_path = NodePath("../Dim")

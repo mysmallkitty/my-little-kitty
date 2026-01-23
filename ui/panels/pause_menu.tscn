@@ -1,0 +1,37 @@
+[gd_scene load_steps=2 format=3 uid="uid://0lkgmbeolltc"]
+
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_i4xk4"]
+
+[node name="PauseMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 96.0
+offset_bottom = 64.0
+theme = ExtResource("1_i4xk4")
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 0
+offset_right = 96.0
+offset_bottom = 8.0
+text = "continue"
+
+[node name="Button3" type="Button" parent="."]
+layout_mode = 0
+offset_top = 16.0
+offset_right = 96.0
+offset_bottom = 24.0
+text = "respawn"
+
+[node name="Button2" type="Button" parent="."]
+layout_mode = 0
+offset_top = 32.0
+offset_right = 97.0
+offset_bottom = 40.0
+text = "restart from startpoint"
+
+[node name="Button4" type="Button" parent="."]
+layout_mode = 0
+offset_top = 48.0
+offset_right = 96.0
+offset_bottom = 56.0
+text = "quit"

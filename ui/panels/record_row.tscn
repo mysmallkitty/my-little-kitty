@@ -1,0 +1,59 @@
+[gd_scene load_steps=5 format=3 uid="uid://bieb7jdjy37ny"]
+
+[ext_resource type="Texture2D" uid="uid://d2wriqw1jmmo2" path="res://graphics/ui/profile_panel_no_detail.png" id="1_31k21"]
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_bwb54"]
+[ext_resource type="Texture2D" uid="uid://c437bfd814cs6" path="res://graphics/ui/16px/user_signed.png" id="2_ic2gl"]
+[ext_resource type="Texture2D" uid="uid://b4v5ol2j3hr8o" path="res://graphics/ui/8px/death.png" id="4_gghp0"]
+
+[node name="RecordRow" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 112.0
+offset_bottom = 21.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_bwb54")
+
+[node name="Panel" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 112.0
+offset_bottom = 18.0
+texture = ExtResource("1_31k21")
+stretch_mode = 2
+
+[node name="ProfilePicture" type="TextureRect" parent="Panel"]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 17.0
+offset_bottom = 17.0
+texture = ExtResource("2_ic2gl")
+
+[node name="username" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 1.0
+offset_right = 59.0
+offset_bottom = 8.0
+text = "username"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel"]
+clip_contents = true
+layout_mode = 0
+offset_left = 19.0
+offset_top = 8.0
+offset_right = 110.0
+offset_bottom = 17.0
+
+[node name="ClearTime" type="Label" parent="Panel/HBoxContainer"]
+layout_mode = 2
+text = "00:00"
+
+[node name="DeathIcon" type="TextureRect" parent="Panel/HBoxContainer"]
+layout_mode = 2
+texture = ExtResource("4_gghp0")
+stretch_mode = 2
+
+[node name="DeathCount" type="Label" parent="Panel/HBoxContainer"]
+layout_mode = 2
+text = "0"

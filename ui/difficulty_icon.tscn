@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://uhe6twg0cfbr"]
+
+[ext_resource type="Texture2D" uid="uid://bjhu16xd4tvcl" path="res://graphics/ui/16px/difficulty/1.png" id="1_eb1qg"]
+
+[node name="DifficultyIcon" type="TextureRect"]
+offset_right = 16.0
+offset_bottom = 16.0
+texture = ExtResource("1_eb1qg")

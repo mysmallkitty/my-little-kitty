@@ -1,0 +1,106 @@
+[gd_scene load_steps=8 format=3 uid="uid://c3qaqw6c26p23"]
+
+[ext_resource type="PackedScene" uid="uid://uhe6twg0cfbr" path="res://ui/difficulty_icon.tscn" id="2_4axvd"]
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="3_aumbu"]
+[ext_resource type="Texture2D" uid="uid://c32bmlfjsmevq" path="res://graphics/ui/16px/edit.png" id="9_vrpj3"]
+[ext_resource type="Texture2D" uid="uid://dnvok24qr3aa" path="res://graphics/ui/16px/file_remove.png" id="10_77xe4"]
+[ext_resource type="Texture2D" uid="uid://deg4gonuf6bnk" path="res://graphics/ui/8px/simple/check.png" id="10_jxlfc"]
+[ext_resource type="PackedScene" uid="uid://dli2pb8ippthn" path="res://ui/button_big.tscn" id="13_mgvde"]
+[ext_resource type="Texture2D" uid="uid://c3j1ean530x1r" path="res://graphics/ui/16px/play.png" id="14_w36ic"]
+
+[node name="DetailPanel" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 144.0
+offset_bottom = 76.0
+theme = ExtResource("3_aumbu")
+
+[node name="Panel" type="Panel" parent="."]
+texture_filter = 1
+layout_mode = 0
+offset_right = 144.0
+offset_bottom = 76.0
+
+[node name="DifficultyIcon" parent="Panel" instance=ExtResource("2_4axvd")]
+layout_mode = 0
+offset_left = 5.0
+offset_top = 8.0
+offset_right = 21.0
+offset_bottom = 24.0
+
+[node name="Title" type="LineEdit" parent="Panel"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 10.0
+offset_right = 120.0
+offset_bottom = 17.0
+theme = ExtResource("3_aumbu")
+placeholder_text = "world name"
+max_length = 20
+
+[node name="FileName" type="Label" parent="Panel"]
+modulate = Color(0.5689727, 0.56897277, 0.5689727, 1)
+layout_mode = 0
+offset_left = 24.0
+offset_top = 19.0
+offset_right = 122.0
+offset_bottom = 26.0
+theme = ExtResource("3_aumbu")
+text = "0.json"
+vertical_alignment = 1
+clip_text = true
+
+[node name="PlayButton" parent="Panel" instance=ExtResource("13_mgvde")]
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 115.0
+offset_top = 48.0
+offset_right = 139.0
+offset_bottom = 72.0
+icon_texture = ExtResource("14_w36ic")
+
+[node name="EditButton" parent="Panel" instance=ExtResource("13_mgvde")]
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 88.0
+offset_top = 48.0
+offset_right = 112.0
+offset_bottom = 72.0
+icon_texture = ExtResource("9_vrpj3")
+
+[node name="DeleteMap" parent="Panel" instance=ExtResource("13_mgvde")]
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 8.0
+offset_top = 48.0
+offset_right = 32.0
+offset_bottom = 72.0
+icon_texture = ExtResource("10_77xe4")
+
+[node name="Check" type="Sprite2D" parent="Panel"]
+position = Vector2(12, 35)
+texture = ExtResource("10_jxlfc")
+
+[node name="Verified" type="Label" parent="Panel"]
+modulate = Color(0.5689727, 0.56897277, 0.5689727, 1)
+layout_mode = 0
+offset_left = 19.0
+offset_top = 32.0
+offset_right = 65.0
+offset_bottom = 39.0
+theme = ExtResource("3_aumbu")
+text = "unverified"
+vertical_alignment = 1
+clip_text = true
