@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=21 format=3 uid="uid://brp31lvnnhk5l"]
+[gd_resource type="TileSet" load_steps=20 format=3 uid="uid://brp31lvnnhk5l"]
 
 [ext_resource type="Texture2D" uid="uid://bkvistmum513k" path="res://graphics/tiles/hazard.png" id="1_dl3ir"]
 [ext_resource type="Texture2D" uid="uid://bjyqh1ftfpewk" path="res://graphics/tiles/blocks.png" id="2_a3ok4"]
@@ -10,7 +10,6 @@
 [ext_resource type="Texture2D" uid="uid://binxo4u7mv4iu" path="res://graphics/tiles/deco.png" id="5_jm16p"]
 [ext_resource type="PackedScene" uid="uid://d3taibme105jg" path="res://objs/jump_orb.tscn" id="5_pu27a"]
 [ext_resource type="PackedScene" uid="uid://by2vk1w8dhr31" path="res://objs/oneway_iron.tscn" id="6_pu27a"]
-[ext_resource type="PackedScene" uid="uid://bp8b72px35s62" path="res://objs/oneway_wood.tscn" id="7_jqw5o"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_a3ok4"]
 resource_name = "hazard_spike"
@@ -799,14 +798,11 @@ texture_region_size = Vector2i(8, 8)
 [sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_pu27a"]
 resource_name = "object_orbs"
 scenes/1/scene = ExtResource("4_jm16p")
-scenes/1/display_placeholder = ExtResource("4_jm16p")
 scenes/2/scene = ExtResource("5_pu27a")
 
 [sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_jqw5o"]
 resource_name = "object_oneways"
 scenes/1/scene = ExtResource("6_pu27a")
-scenes/1/display_placeholder = ExtResource("6_pu27a")
-scenes/2/scene = ExtResource("7_jqw5o")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_dl3ir"]
 resource_name = "block_set0"
