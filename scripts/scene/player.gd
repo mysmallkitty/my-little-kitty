@@ -11,6 +11,8 @@ extends CharacterBody2D
 @export var dash_time := 0.25
 @export var dash_gravity_scale := 0
 @export var dash_lift_accel := 0
+@export var wall_climb_speed := 50.0
+@export var wall_slide_gravity_mult := 0.5
 
 @export var ground_accel := 2000.0
 @export var air_accel := 900.0
@@ -33,6 +35,8 @@ var _vel: Vector2
 var _on_floor_timer := 0.0
 var _jump_buffer_timer := 0.0
 var _has_air_jump := true
+var _is_wall_climbing = false
+var _wall_climb_timer := 0.0
 
 var _is_dashing := false
 var _dash_timer := 0.0
@@ -190,6 +194,7 @@ func _physics_process(delta):
 		_die()
 
 func _handle_timers(delta: float) -> void:
+
 	if is_on_floor():
 		signal_grounded.emit()
 		_has_dash = true
@@ -197,6 +202,11 @@ func _handle_timers(delta: float) -> void:
 		_has_air_jump = true
 	else:
 		_on_floor_timer = max(0.0, _on_floor_timer - delta)
+	
+	if is_on_wall():
+		var dir = Input.get_action_strength("player_right") - Input.get_action_strength("player_left")
+		if abs(dir) > 0:
+			pass
 
 	_jump_buffer_timer = max(0.0, _jump_buffer_timer - delta)
 
