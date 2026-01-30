@@ -57,3 +57,7 @@ stretch_mode = 2
 [node name="DeathCount" type="Label" parent="Panel/HBoxContainer"]
 layout_mode = 2
 text = "0"
+
+[node name="PP" type="Label" parent="Panel/HBoxContainer"]
+layout_mode = 2
+text = "200pp"

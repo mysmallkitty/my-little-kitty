@@ -1,10 +1,11 @@
-[gd_scene load_steps=7 format=3 uid="uid://cch35x3210bth"]
+[gd_scene load_steps=8 format=3 uid="uid://cch35x3210bth"]
 
 [ext_resource type="Script" uid="uid://dojna2fa0e63x" path="res://scripts/map/map_world.gd" id="1_world"]
 [ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="2_iw7op"]
 [ext_resource type="PackedScene" uid="uid://0lkgmbeolltc" path="res://ui/panels/pause_menu.tscn" id="3_8ijdc"]
 [ext_resource type="Script" uid="uid://b8yybj7rf263y" path="res://scripts/map/map_background.gd" id="4_bg"]
 [ext_resource type="Script" uid="uid://brhd4il8y0v1l" path="res://scripts/map/map_preview.gd" id="5_preview"]
+[ext_resource type="Texture2D" uid="uid://b4v5ol2j3hr8o" path="res://graphics/ui/8px/death.png" id="6_0ryqv"]
 [ext_resource type="Texture2D" uid="uid://c0kfoeksewc0g" path="res://graphics/backgrounds/mountain.png" id="6_bgtex"]
 
 [node name="MapPlay" type="Node2D"]
@@ -32,6 +33,26 @@ offset_bottom = 180.0
 mouse_filter = 1
 theme = ExtResource("2_iw7op")
 
+[node name="TotalDeath" type="Label" parent="UI/Hud"]
+layout_mode = 0
+offset_left = 13.0
+offset_top = 3.0
+offset_right = 72.0
+offset_bottom = 10.0
+text = "0"
+
+[node name="ClearTime" type="Label" parent="UI/Hud"]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 12.0
+offset_right = 63.0
+offset_bottom = 19.0
+text = "00:00:00"
+
+[node name="Death" type="Sprite2D" parent="UI/Hud"]
+position = Vector2(6, 6)
+texture = ExtResource("6_0ryqv")
+
 [node name="Dim" type="ColorRect" parent="UI"]
 visible = false
 anchors_preset = 15
@@ -44,6 +65,8 @@ color = Color(0, 0, 0, 0)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
 color = Color(0, 0, 0, 0)
 

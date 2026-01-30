@@ -5,7 +5,7 @@ signal connected
 signal disconnected
 signal peer_joined(peer_id: String)
 signal peer_left(peer_id: String)
-signal peer_state(peer_id: String, position: Vector2)
+signal peer_state(peer_id: String, position: Vector2, dir: float)
 signal peer_death(peer_id: String)
 signal chat_message(peer_id: String, text: String)
 
@@ -52,19 +52,29 @@ func _process(_delta: float) -> void:
 		_pending_queue.clear()
 		_poll_packets()
 
-func send_state(pos: Vector2) -> void:
+func send_state(pos: Vector2, dir: float = 0.0) -> void:
 	if not _ready:
 		return
 	_send_json({
 		"type": "position",
-		"pos": {"x": pos.x, "y": pos.y},
+		"pos": {"x": pos.x, "y": pos.y, "dir": dir},
 	})
 
-func send_death() -> void:
+func send_death(dir: float = 0.0) -> void:
 	if not _ready:
 		return
 	_send_json({
 		"type": "death",
+		"dir": dir,
+	})
+
+func send_clear(clear_time: int, deaths: int) -> void:
+	if not _ready:
+		return
+	_send_json({
+		"type": "clear",
+		"clear_time": clear_time,
+		"deaths": deaths,
 	})
 
 func send_chat(text: String) -> void:
@@ -104,10 +114,11 @@ func _handle_message(msg: Dictionary) -> void:
 				return
 			var pos_dict = msg.get("pos", {})
 			var pos := Vector2(float(pos_dict.get("x", 0.0)), float(pos_dict.get("y", 0.0)))
+			var dir := float(pos_dict.get("dir", 0.0))
 			if not _known_peers.has(pid):
 				_known_peers[pid] = true
 				peer_joined.emit(pid)
-			peer_state.emit(pid, pos)
+			peer_state.emit(pid, pos, dir)
 		"death":
 			var pid := _normalize_peer_id(str(msg.get("player_id", "")))
 			if pid != _player_id and pid != "":
@@ -120,6 +131,18 @@ func _handle_message(msg: Dictionary) -> void:
 			var text := str(msg.get("text", ""))
 			if text.strip_edges() != "":
 				chat_message.emit(pid, text)
+		"peer_joined":
+			var pid := _normalize_peer_id(str(msg.get("user_id", "")))
+			if pid != _player_id and not _known_peers.has(pid):
+				_known_peers[pid] = true
+				peer_joined.emit(pid)
+		"peer_left":
+			var pid := _normalize_peer_id(str(msg.get("user_id", "")))
+			if _known_peers.has(pid):
+				_known_peers.erase(pid)
+			peer_left.emit(pid)
+		"clear_ack":
+			pass
 		"death_ack":
 			pass
 		"session_started":

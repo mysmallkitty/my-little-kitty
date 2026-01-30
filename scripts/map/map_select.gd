@@ -439,6 +439,10 @@ func _on_stats_pressed() -> void:
 	if stats_panel.visible:
 		_show_hide_popup(stats_panel, false)
 		return
+	if _selected_index >= 0 and _selected_index < _items.size():
+		var entry: Dictionary = _items[_selected_index].data
+		entry = await _ensure_detail_for_entry(entry)
+		_items[_selected_index].set_data(entry)
 	_show_hide_popup(_get_leaderboard_panel(), false)
 	_update_stats_panel()
 	_show_popup(stats_panel)
@@ -458,11 +462,11 @@ func _update_stats_panel() -> void:
 	var deaths := 0
 	if _selected_index >= 0 and _selected_index < _items.size():
 		var entry: Dictionary = _items[_selected_index].data
-		var time := str(entry.get("best_time", ""))
-		if time != "":
-			best = time
-		tries = int(entry.get("total_attempts", 0))
-		deaths = int(entry.get("total_deaths", 0))
+		var raw_best = entry.get("best_time", null)
+		if raw_best:
+			best = Game._format_ticks(int(raw_best))
+		tries = int(entry.get("user_attempts", entry.get("total_attempts", 0)))
+		deaths = int(entry.get("user_deaths", entry.get("total_deaths", 0)))
 	stats_panel.set_stats(tries, deaths, best)
 
 func _on_title_changed(new_text: String) -> void:
@@ -747,7 +751,7 @@ func _ensure_detail_for_entry(entry: Dictionary) -> Dictionary:
 	return entry
 
 func _apply_detail_to_entry(entry: Dictionary, detail: Dictionary) -> void:
-	for key in ["title", "creator", "rating", "total_attempts", "total_deaths", "total_clears", "created_at", "updated_at", "thumbnail_url", "map_url", "hash", "is_ranked", "loved_count"]:
+	for key in ["title", "creator", "rating", "total_attempts", "total_deaths", "total_clears", "created_at", "updated_at", "thumbnail_url", "map_url", "hash", "is_ranked", "loved_count", "user_attempts", "user_deaths", "best_time", "is_loved"]:
 		if detail.has(key):
 			entry[key] = detail.get(key)
 
@@ -785,7 +789,7 @@ func _get_list_viewport() -> Control:
 	return get_node("UI/Hud/ListViewport") as Control
 
 func _get_play_detail_panel() -> MapSelectDetailPlay:
-	return get_node_or_null("UI/DetailPanel") as MapSelectDetailPlay
+	return get_node_or_null("UI/Hud/DetailPanel") as MapSelectDetailPlay
 
 func _get_editor_detail_panel() -> MapSelectDetailEditor:
 	return get_node_or_null("UI/Hud/DetailPanel") as MapSelectDetailEditor

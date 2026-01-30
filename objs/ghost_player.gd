@@ -11,8 +11,10 @@ func set_nickname(nick: String) -> void:
 	if name_label != null:
 		name_label.text = nick if nick.strip_edges() != "" else "(guest)"
 
-func apply_state(pos: Vector2, alive: bool = true) -> void:
+func apply_state(pos: Vector2, dir: float = 0.0, alive: bool = true) -> void:
 	global_position = pos
+	if dir != 0 and sprite != null:
+		sprite.scale.x = 1 if dir >= 0 else -1
 	if alive and not _alive:
 		_set_alive(true)
 	elif not alive and _alive:

@@ -26,6 +26,7 @@ text = "level compeleted!"
 
 [node name="IconButton" parent="Panel" instance=ExtResource("2_fcgrq")]
 layout_mode = 1
+anchors_preset = 0
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
@@ -51,6 +52,15 @@ offset_top = 45.0
 offset_right = 79.0
 offset_bottom = 52.0
 text = "00:00:00"
+
+[node name="pp" type="Label" parent="Panel"]
+visible = false
+layout_mode = 0
+offset_left = 19.0
+offset_top = 56.0
+offset_right = 44.0
+offset_bottom = 63.0
+text = "0pp"
 
 [node name="Death" type="Sprite2D" parent="Panel"]
 position = Vector2(10, 37)

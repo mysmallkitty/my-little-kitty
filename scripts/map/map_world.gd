@@ -39,6 +39,8 @@ var _name_fetching: Dictionary = {}
 var _chat_scene: PackedScene = preload("res://scripts/scene/chat.tscn")
 var _chat_line: LineEdit
 var _chat_open := false
+@onready var _total_death_label := $UI/Hud/TotalDeath
+@onready var _clear_time_label := $UI/Hud/ClearTime
 
 var _has_checkpoint := false
 var _awaiting_first_step := false
@@ -90,6 +92,7 @@ func _physics_process(_delta):
 	if _map_cleared:
 		return
 	_cleartime += 1
+	_clear_time_label.text = Game._format_ticks(_cleartime)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _handle_chat_input(event):
@@ -326,6 +329,8 @@ func _clear_chat_container(target: Node) -> void:
 
 
 func _update_current_chunk() -> void:
+	if not player:
+		return
 	var tile_pos := _world_to_tile(player.global_position)
 	var found := map_data.get_chunk_at_tile(tile_pos)
 	if found == null:
@@ -409,8 +414,9 @@ func _respawn() -> void:
 		return
 	_respawning = true
 	_total_death += 1
+	_total_death_label.text = str(_total_death)
 	if ws != null and ws.is_ready():
-		ws.send_death()
+		ws.send_death(player.dir_look)
 	if player != null:
 		player.editor_mode = true
 		player.velocity = Vector2.ZERO
@@ -428,14 +434,16 @@ func _respawn() -> void:
 		if respawn_chunk != null:
 			respawn_pos = player._checkpoint_pos
 			used_checkpoint = true
-	else:
-		_cleartime = 0
-		_total_death = 0
+
 	if respawn_chunk == null:
 		respawn_chunk = _get_start_chunk()
 		respawn_pos = _spawn_position()
 	current_chunk = respawn_chunk
 	_replace_player(respawn_pos, used_checkpoint)
+	if current_chunk == _get_start_chunk():
+		_cleartime = 0
+		_total_death = 0
+		_total_death_label.text = str(_total_death)
 	if used_checkpoint:
 		_awaiting_first_step = false
 		_pending_chunk_id = ""
@@ -483,6 +491,8 @@ func _on_map_cleared() -> void:
 		if map_path.strip_edges() != "":
 			MapIO.save_map(map_path, map_data)
 	_update_clear_panel()
+	if ws != null and ws.is_ready():
+		ws.send_clear(_cleartime, _total_death)
 	if clear_panel != null:
 		clear_panel.visible = true
 
@@ -672,7 +682,7 @@ func _update_network(delta: float) -> void:
 	_net_accum += delta
 	if _net_accum >= accum_rate and ws.is_ready():
 		_net_accum = 0.0
-		ws.send_state(player.global_position)
+		ws.send_state(player.global_position, player.dir_look)
 
 func _resolve_player_id() -> String:
 	var me = ApiClient.me
@@ -696,11 +706,11 @@ func _on_peer_left(peer_id: String) -> void:
 			g.queue_free()
 		ghosts.erase(pid)
 
-func _on_peer_state(peer_id: String, pos: Vector2) -> void:
+func _on_peer_state(peer_id: String, pos: Vector2, dir: float = 0.0) -> void:
 	var pid := _normalize_user_id(peer_id)
 	var ghost = _spawn_ghost(pid, _cached_name(pid))
 	if ghost != null:
-		ghost.apply_state(pos, true)
+		ghost.apply_state(pos, dir, true)
 		_ensure_name_async(pid)
 
 func _on_peer_death(peer_id: String) -> void:

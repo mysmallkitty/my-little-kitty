@@ -28,7 +28,6 @@ extends CharacterBody2D
 
 signal signal_damaged
 signal signal_grounded
-signal signal_respawn
 signal signal_complete
 
 var _dash_vel: Vector2
@@ -183,7 +182,8 @@ func _handle_timers(delta: float) -> void:
 
 	if is_on_floor():
 		signal_grounded.emit()
-		_has_dash = true
+		if not _is_dashing:
+			_has_dash = true
 		_on_floor_timer = coyote_time
 		_has_air_jump = true
 	else:

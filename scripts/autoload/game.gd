@@ -64,3 +64,13 @@ func _set_bus_volume(bus_name: String, value: float) -> void:
 		return
 	var db := linear_to_db(value)
 	AudioServer.set_bus_volume_db(idx, db)
+
+func _format_ticks(frames: int) -> String:
+	var ticks := int(ProjectSettings.get_setting("physics/common/physics_ticks_per_second", 60))
+	if ticks <= 0:
+		ticks = 60
+	var total_seconds := frames / float(ticks)
+	var minutes := int(total_seconds / 60)
+	var seconds := int(total_seconds) % 60
+	var frac := frames % ticks
+	return "%02d:%02d:%02d" % [minutes, seconds, frac]

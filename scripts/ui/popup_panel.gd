@@ -1,4 +1,4 @@
-class_name SlidePopup
+﻿class_name SlidePopup
 extends Control
 
 @export var dim_path: NodePath
@@ -8,6 +8,7 @@ extends Control
 
 var _base_pos := Vector2.ZERO
 var _dim: CanvasItem
+var _dim_controller: Node
 var _dim_is_color := false
 var _tween: Tween
 
@@ -15,9 +16,12 @@ func _ready() -> void:
 	_base_pos = position
 	if dim_path != NodePath():
 		_dim = get_node_or_null(dim_path) as CanvasItem
-	_dim_is_color = _dim is ColorRect
-	if _dim != null:
-		_dim.visible = false
+	if _dim != null and _dim.has_method("acquire") and _dim.has_method("release"):
+		_dim_controller = _dim
+	else:
+		_dim_is_color = _dim is ColorRect
+		if _dim != null:
+			_dim.visible = false
 
 func show_popup() -> void:
 	_visible_on()
@@ -26,13 +30,14 @@ func show_popup() -> void:
 		_tween.kill()
 	_tween = create_tween()
 	_tween.tween_property(self, "position", _base_pos, anim_time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	if _dim != null:
+	if _dim_controller != null:
+		_dim_controller.call("acquire")
+	elif _dim != null:
+		_set_dim_count(_get_dim_count() + 1)
 		_dim.visible = true
 		if _dim is Control:
 			(_dim as Control).mouse_filter = Control.MOUSE_FILTER_STOP
-		_set_dim_alpha(0.0)
-		var prop := "color:a" if _dim_is_color else "modulate:a"
-		_tween.parallel().tween_property(_dim, prop, 0.55, anim_time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		_set_dim_alpha(0.55)
 
 func hide_popup() -> void:
 	if _tween != null:
@@ -40,9 +45,6 @@ func hide_popup() -> void:
 	var target := _offscreen_position()
 	_tween = create_tween()
 	_tween.tween_property(self, "position", target, anim_time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
-	if _dim != null:
-		var prop := "color:a" if _dim_is_color else "modulate:a"
-		_tween.parallel().tween_property(_dim, prop, 0.0, anim_time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	_tween.finished.connect(_on_hide_finished)
 
 func _position_offscreen() -> void:
@@ -107,7 +109,24 @@ func _set_dim_alpha(alpha: float) -> void:
 	else:
 		_dim.modulate.a = alpha
 
+func _get_dim_count() -> int:
+	if _dim == null:
+		return 0
+	return int(_dim.get_meta("_popup_count", 0))
+
+func _set_dim_count(count: int) -> void:
+	if _dim == null:
+		return
+	_dim.set_meta("_popup_count", max(0, count))
+
 func _on_hide_finished() -> void:
 	visible = false
+	if _dim_controller != null:
+		_dim_controller.call("release")
+		return
 	if _dim != null:
-		_dim.visible = false
+		var count = max(0, _get_dim_count() - 1)
+		_set_dim_count(count)
+		if count == 0:
+			_dim.visible = false
+			_set_dim_alpha(0.0)

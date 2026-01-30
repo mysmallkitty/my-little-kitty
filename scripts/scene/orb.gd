@@ -29,14 +29,17 @@ func _on_body_entered(body: Node2D) -> void:
 		player.connect("signal_grounded", _regen, CONNECT_ONE_SHOT)
 	if not player.is_connected("signal_damaged", _regen):
 		player.connect("signal_damaged", _regen, CONNECT_ONE_SHOT)
-	
-	
+
 	_orb_func(player)
 	if sfx:
 		sfx_player.play()
 	break_particles.emitting = true
 	enable = false
 	anim.play("break")
+
+func _physics_process(_delta: float) -> void:
+	if not player and not enable:
+		_regen()
 
 func _on_animation_finished() -> void:
 	if anim.animation == "regen":

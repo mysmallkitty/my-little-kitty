@@ -1,5 +1,5 @@
 class_name MapSelectLeaderboardPanel
-extends "res://scripts/ui/popup_panel.gd"
+extends SlidePopup
 
 signal close_pressed
 
@@ -36,13 +36,16 @@ func set_rows(rows: Array) -> void:
 		row_node.position = Vector2(0, y)
 		var name_label := row_node.get_node_or_null("Panel/username") as Label
 		if name_label != null:
-			name_label.text = str(entry_dict.get("username", entry_dict.get("name", "")))
+			name_label.text = str(entry_dict.get("username",""))
 		var time_label := row_node.get_node_or_null("Panel/HBoxContainer/ClearTime") as Label
 		if time_label != null:
-			time_label.text = str(entry_dict.get("clear_time", entry_dict.get("time", "")))
+			time_label.text = Game._format_ticks(int(entry_dict.get("clear_time",0)))
 		var death_label := row_node.get_node_or_null("Panel/HBoxContainer/DeathCount") as Label
 		if death_label != null:
-			death_label.text = str(entry_dict.get("deaths", entry_dict.get("death", 0)))
+			death_label.text = str(int(entry_dict.get("deaths", entry_dict.get("death", 0))))
+		var pp_label := row_node.get_node_or_null("Panel/HBoxContainer/PP") as Label
+		if death_label != null:
+			pp_label.text = str(int(entry_dict.get("pp", 0))) + "pp"
 		_rows.add_child(row_node)
 		y += row_node.size.y
 

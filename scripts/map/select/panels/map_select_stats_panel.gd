@@ -15,11 +15,11 @@ func _ready() -> void:
 
 func set_stats(total_attempts: int, total_deaths: int, best_time: String) -> void:
 	if _play_count != null:
-		_play_count.text = str(total_attempts)
+		_play_count.text = str(int(total_attempts))
 	if _death_count != null:
-		_death_count.text = str(total_deaths)
+		_death_count.text = str(int(total_deaths))
 	if _best_time != null:
-		_best_time.text = best_time if best_time != "" else "--:--"
+		_best_time.text = best_time if best_time != "" or null else "--:--"
 
 func _on_close_pressed() -> void:
 	close_pressed.emit()
