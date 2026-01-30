@@ -284,6 +284,9 @@ func PUT(path: String, body: Variant, extra_headers: PackedStringArray = PackedS
 func DELETE(path: String, extra_headers: PackedStringArray = PackedStringArray()) -> Dictionary:
 	return await request_json(HTTPClient.METHOD_DELETE, path, null, extra_headers)
 
+func PATCH(path: String, body: Variant, extra_headers: PackedStringArray = PackedStringArray()) -> Dictionary:
+	return await request_json(HTTPClient.METHOD_PATCH, path, body, extra_headers)
+
 func POST_FORM(path: String, body: Dictionary, extra_headers: PackedStringArray = PackedStringArray()) -> Dictionary:
 	var headers := PackedStringArray()
 	headers.append("Content-Type: application/x-www-form-urlencoded")

@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://ore1bbwl67gk" path="res://ui/panels/create_new_map.tscn" id="11_1gbyj"]
 [ext_resource type="PackedScene" uid="uid://dl7caoqabrnib" path="res://ui/panels/auth_panel.tscn" id="12_auth"]
 [ext_resource type="PackedScene" uid="uid://bpfpfirn2b13r" path="res://ui/panels/user_profile_detail.tscn" id="13_profile"]
+[ext_resource type="PackedScene" uid="uid://c68csufdvmyo7" path="res://ui/panels/profile_edit.tscn" id="14_profile_edit"]
 
 [node name="MapSelectPlay" type="Node2D"]
 script = ExtResource("1_select")
@@ -109,4 +110,10 @@ dim_path = NodePath("../Dim")
 visible = false
 offset_left = 8.0
 offset_top = 38.0
+dim_path = NodePath("../Dim")
+
+[node name="ProfileEdit" parent="UI" instance=ExtResource("14_profile_edit")]
+visible = false
+offset_left = 8.0
+offset_top = 20.0
 dim_path = NodePath("../Dim")

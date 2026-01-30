@@ -17,7 +17,9 @@ func refresh_from_api() -> void:
 		return
 	var username := str(me.get("username", "guest"))
 	var level := int(me.get("level", 1))
-	set_profile(username, level, null, null, false)
+	var sprite_code := str(me.get("profile_sprite", ""))
+	var tex := Game.get_profile_texture(sprite_code)
+	set_profile(username, level, tex, null, false)
 
 func set_profile(username: String, level: int, picture: Texture2D, rank_texture: Texture2D, show_rank: bool) -> void:
 	if username_label != null:

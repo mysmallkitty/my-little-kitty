@@ -13,6 +13,8 @@ var user_id = -1
 @onready var country_label = $CountryFlag
 @onready var total_pp_label = $TotalPP
 @onready var total_pp_icon = $PPIcon
+@onready var profile_pic: TextureRect = $ProfilePic
+@onready var edit_button = $EditButton
 
 func _ready() -> void:
 	super()
@@ -36,12 +38,33 @@ func refresh_from_api() -> void:
 func _connect_buttons() -> void:
 	if close_button != null and not close_button.pressed.is_connected(_on_close_pressed):
 		close_button.pressed.connect(_on_close_pressed)
+	if edit_button != null and not edit_button.pressed.is_connected(_on_edit_pressed):
+		edit_button.pressed.connect(_on_edit_pressed)
+	if profile_pic != null and not profile_pic.gui_input.is_connected(_on_profile_pic_input):
+		profile_pic.gui_input.connect(_on_profile_pic_input)
 
 func _on_close_pressed() -> void:
 	hide_popup()
 
+func _on_edit_pressed() -> void:
+	var panels := get_tree().get_nodes_in_group("profile_edit_panels")
+	if panels.is_empty():
+		return
+	var editor := panels[0]
+	if editor != null and editor.has_method("open_for_me"):
+		editor.open_for_me()
+
+func _on_profile_pic_input(event: InputEvent) -> void:
+	if not _is_me(_get_me_data()):
+		return
+	if event is InputEventMouseButton:
+		var mb := event as InputEventMouseButton
+		if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
+			_on_edit_pressed()
+
 func _apply_user(user: Dictionary) -> void:
 	if not user.is_empty():
+		user_id = int(user.get("id", user.get("user_id", -1)))
 		username_label.text = str(user.get("username", "guest")) + " (" + str(int(user.get("level", 0))) + ")"
 		var rank = user.get("rank", null)
 		rank_label.text = "#%s" % str(int(rank)) if rank != null else "#--"
@@ -57,6 +80,15 @@ func _apply_user(user: Dictionary) -> void:
 			str(Game.get_rank_from_total_pp(total_pp)) +
 			".png"
 			)
+		var sprite_code := str(user.get("profile_sprite", ""))
+		if profile_pic != null:
+			var tex := Game.get_profile_texture(sprite_code)
+			if tex != null:
+				profile_pic.texture = tex
+			else:
+				profile_pic.texture = load("res://graphics/ui/16px/user_guest.png")
+	if edit_button != null:
+		edit_button.visible = _is_me(user)
 		
 
 
@@ -84,3 +116,9 @@ func _get_me_data() -> Dictionary:
 			return me.get("data", {})
 		return me
 	return {}
+
+func _is_me(user: Dictionary) -> bool:
+	var me := _get_me_data()
+	if me.is_empty():
+		return false
+	return int(me.get("id", -1)) == int(user.get("id", user.get("user_id", -2)))

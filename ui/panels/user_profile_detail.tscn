@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bpfpfirn2b13r"]
+[gd_scene load_steps=14 format=3 uid="uid://bpfpfirn2b13r"]
 
 [ext_resource type="Script" uid="uid://cgy33tbyoje6b" path="res://scripts/ui/user_profile_detail.gd" id="1_script"]
 [ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_uavsx"]
@@ -12,6 +12,7 @@
 [ext_resource type="AudioStream" uid="uid://c6yn55me6x205" path="res://audio/click.wav" id="10_65g8n"]
 [ext_resource type="Texture2D" uid="uid://cdb1r6yfycofa" path="res://graphics/ui/16px/user_guest.png" id="11_hxnar"]
 [ext_resource type="Texture2D" uid="uid://b2odneysof1e2" path="res://graphics/ui/8px/ranks/1.png" id="12_ac3mq"]
+[ext_resource type="Texture2D" uid="uid://x7r2dhv5n2kg6" path="res://graphics/ui/8px/edit.png" id="13_edit"]
 
 [node name="UserProfileDetail" type="Control"]
 layout_mode = 3
@@ -132,9 +133,24 @@ offset_bottom = 23.0
 icon_texture = ExtResource("9_ga5xi")
 click_sound = ExtResource("10_65g8n")
 
-[node name="ProfilePic" type="Sprite2D" parent="."]
-position = Vector2(15, 25)
+[node name="EditButton" parent="." instance=ExtResource("8_tybc6")]
+layout_mode = 0
+offset_left = 95.0
+offset_top = 7.0
+offset_right = 111.0
+offset_bottom = 23.0
+icon_texture = ExtResource("13_edit")
+click_sound = ExtResource("10_65g8n")
+
+[node name="ProfilePic" type="TextureRect" parent="."]
+layout_mode = 0
+offset_left = 7.0
+offset_top = 16.0
+offset_right = 23.0
+offset_bottom = 32.0
 texture = ExtResource("11_hxnar")
+stretch_mode = 2
+mouse_filter = 0
 
 [node name="PPIcon" type="Sprite2D" parent="."]
 position = Vector2(77, 56)

@@ -18,10 +18,16 @@ var random_bg_path: String = ""
 var master_volume := 1.0
 var bgm_volume := 1.0
 var sfx_volume := 1.0
+const PROFILE_SIZE := 16
+const PROFILE_CODE_LEN := 256
+const PROFILE_ALPHABET := "0123456789abcdefghijklmnopqrstuv"
+var _profile_texture_cache: Dictionary = {}
+var _profile_palette: Array = []
 
 func _ready() -> void:
 	_apply_audio()
 	Engine.max_fps = 60
+	_profile_palette = Palatte.new().colors
 
 func ensure_dirs() -> void:
 	DirAccess.make_dir_recursive_absolute(WIP_DIR)
@@ -89,3 +95,48 @@ func _format_ticks(frames: int) -> String:
 	var seconds := int(total_seconds) % 60
 	var frac := frames % ticks
 	return "%02d:%02d:%02d" % [minutes, seconds, frac]
+
+func get_profile_texture(code: String) -> Texture2D:
+	if code.length() != PROFILE_CODE_LEN:
+		return null
+	if _profile_texture_cache.has(code):
+		return _profile_texture_cache[code]
+	var img := Image.create(PROFILE_SIZE, PROFILE_SIZE, false, Image.FORMAT_RGBA8)
+	var idx := 0
+	for y in range(PROFILE_SIZE):
+		for x in range(PROFILE_SIZE):
+			var ch := code.substr(idx, 1)
+			var color_index := _profile_index_from_char(ch)
+			var color = _profile_palette[color_index]
+			img.set_pixel(x, y, color)
+			idx += 1
+	var tex := ImageTexture.create_from_image(img)
+	_profile_texture_cache[code] = tex
+	return tex
+
+func profile_code_from_indices(indices: PackedInt32Array) -> String:
+	if indices.size() != PROFILE_CODE_LEN:
+		return ""
+	var out := ""
+	for i in range(indices.size()):
+		var idx := int(indices[i])
+		if idx < 0 or idx >= PROFILE_ALPHABET.length():
+			idx = 0
+		out += PROFILE_ALPHABET[idx]
+	return out
+
+func profile_indices_from_code(code: String) -> PackedInt32Array:
+	var out := PackedInt32Array()
+	out.resize(PROFILE_CODE_LEN)
+	for i in range(PROFILE_CODE_LEN):
+		if i >= code.length():
+			out[i] = 0
+		else:
+			out[i] = _profile_index_from_char(code.substr(i, 1))
+	return out
+
+func _profile_index_from_char(ch: String) -> int:
+	var idx := PROFILE_ALPHABET.find(ch)
+	if idx < 0:
+		return 0
+	return idx

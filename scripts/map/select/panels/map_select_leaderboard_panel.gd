@@ -38,6 +38,12 @@ func set_rows(rows: Array) -> void:
 		var name_label := row_node.get_node_or_null("Panel/username") as Label
 		if name_label != null:
 			name_label.text = str(entry_dict.get("username",""))
+		var avatar := row_node.get_node_or_null("Panel/ProfilePicture") as TextureRect
+		if avatar != null:
+			var sprite_code := str(entry_dict.get("profile_sprite", ""))
+			var tex := Game.get_profile_texture(sprite_code)
+			if tex != null:
+				avatar.texture = tex
 		var time_label := row_node.get_node_or_null("Panel/HBoxContainer/ClearTime") as Label
 		if time_label != null:
 			time_label.text = Game._format_ticks(int(entry_dict.get("clear_time",0)))

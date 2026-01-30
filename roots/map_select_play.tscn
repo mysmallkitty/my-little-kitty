@@ -14,6 +14,7 @@
 [ext_resource type="PackedScene" uid="uid://bjdhvw45vkuxs" path="res://ui/panels/leader_board.tscn" id="8_tx2k2"]
 [ext_resource type="PackedScene" uid="uid://dl7caoqabrnib" path="res://ui/panels/auth_panel.tscn" id="9_auth"]
 [ext_resource type="PackedScene" uid="uid://bpfpfirn2b13r" path="res://ui/panels/user_profile_detail.tscn" id="10_profile"]
+[ext_resource type="PackedScene" uid="uid://c68csufdvmyo7" path="res://ui/panels/profile_edit.tscn" id="11_profile_edit"]
 [ext_resource type="Script" uid="uid://badwokxjuf5j2" path="res://scripts/map/select/panels/map_select_stats_panel.gd" id="12_onqqg"]
 [ext_resource type="Script" uid="uid://cpqpywwb0u23o" path="res://scripts/map/select/panels/map_select_leaderboard_panel.gd" id="14_1uai0"]
 [ext_resource type="PackedScene" uid="uid://bieb7jdjy37ny" path="res://ui/panels/record_row.tscn" id="15_tfhxb"]
@@ -121,4 +122,10 @@ dim_path = NodePath("../Dim")
 visible = false
 offset_left = 8.0
 offset_top = 38.0
+dim_path = NodePath("../Dim")
+
+[node name="ProfileEdit" parent="UI" instance=ExtResource("11_profile_edit")]
+visible = false
+offset_left = 8.0
+offset_top = 20.0
 dim_path = NodePath("../Dim")
