@@ -5,7 +5,6 @@ extends SlidePopup
 @onready var upload_button: BaseButton = $Panel2/UploadButton
 @onready var palette_root: Control = $Panel2/PaletteRoot
 @onready var canvas: PixelCanvas = $Panel2/Canvas
-@onready var palette_info: Label = $Panel2/PaletteInfo
 
 var _palette_items: Array = []
 var _active_color_index := 0
@@ -79,8 +78,6 @@ func _apply_allowed_palette() -> void:
 			item.modulate = Color(1, 1, 1, 1)
 		else:
 			item.modulate = Color(0.3, 0.3, 0.3, 1)
-	if palette_info != null:
-		palette_info.text = "Palette: %s" % ("64" if _use_64 else "32")
 
 func _on_palette_input(event: InputEvent, index: int) -> void:
 	if event is InputEventMouseButton:
@@ -100,9 +97,9 @@ func _set_active_color(index: int) -> void:
 		if item == null:
 			continue
 		if i == _active_color_index:
-			item.modulate = Color(1, 1, 1, 1)
-		elif (_use_64 and i <= 63) or (not _use_64 and i <= 31):
 			item.modulate = Color(0.7, 0.7, 0.7, 1)
+		elif (_use_64 and i <= 63) or (not _use_64 and i <= 31):
+			item.modulate = Color(1.0, 1.0, 1.0, 1.0)
 
 func _load_from_me() -> void:
 	if canvas == null:

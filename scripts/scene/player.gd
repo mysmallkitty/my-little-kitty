@@ -25,6 +25,13 @@ extends CharacterBody2D
 @export var jump_sfx: AudioStream = preload("res://audio/jump.wav")
 @export var hyper_sfx: AudioStream = preload("res://audio/hyper.wav")
 @export var dash_sfx: AudioStream = preload("res://audio/dash.wav")
+@export var jump_particle_scene: PackedScene = preload("res://graphics/particles/jump_particle.tscn")
+@export var air_jump_pitch_base := 1.2
+@export var air_jump_pitch_step := 0.2
+@export var air_jump_pitch_max_count := 6
+@export var afterimage_interval := 0.05
+@export var afterimage_lifetime := 0.2
+@export var afterimage_color := Color(1, 1, 1, 0.6)
 
 signal signal_damaged
 signal signal_grounded
@@ -35,6 +42,7 @@ var _vel: Vector2
 var _on_floor_timer := 0.0
 var _jump_buffer_timer := 0.0
 var _has_air_jump := true
+var _air_jump_chain := 0
 
 var _is_dashing := false
 var _dash_timer := 0.0
@@ -43,9 +51,7 @@ var dir_look := 1.0
 
 var _post_dash_jump_timer := 0.0
 var _post_dash_dir := 1.0
-
-@warning_ignore("unused_private_class_variable")
-var _checkpoint_pos: Vector2 = Vector2.ZERO
+var _afterimage_timer := 0.0
 
 var _jump_player: AudioStreamPlayer
 var _hyper_player: AudioStreamPlayer
@@ -138,6 +144,9 @@ func _respawn() -> void:
 func _input(event):
 	if editor_mode:
 		return
+	var key_event := event as InputEventKey
+	if key_event != null and key_event.echo:
+		return
 
 	if event.is_action_pressed("player_jump"):
 		_jump_buffer_timer = jump_buffer
@@ -157,6 +166,8 @@ func _physics_process(delta):
 	if editor_mode:
 		return
 
+	var dt := _get_tick_dt(delta)
+
 	var input_dir := Input.get_action_strength("player_right") - Input.get_action_strength("player_left")
 	if input_dir < 0.0:
 		dir_look = -1.0
@@ -165,13 +176,13 @@ func _physics_process(delta):
 
 	$Kitty.scale.x = dir_look
 
-	_handle_timers(delta)
+	_handle_timers(dt)
 
 	if _is_dashing:
-		_dash_step(delta)
+		_dash_step(dt)
 		_consume_jump_buffer_while_dashing()
 	else:
-		_air_ground_step(delta)
+		_air_ground_step(dt)
 
 	_apply_move()
 
@@ -186,6 +197,7 @@ func _handle_timers(delta: float) -> void:
 			_has_dash = true
 		_on_floor_timer = coyote_time
 		_has_air_jump = true
+		_air_jump_chain = 0
 	else:
 		_on_floor_timer = max(0.0, _on_floor_timer - delta)
 	
@@ -240,6 +252,7 @@ func _air_ground_step(delta: float) -> void:
 func _start_dash() -> void:
 	_is_dashing = true
 	_dash_timer = dash_time
+	_afterimage_timer = 0.0
 
 	_dash_vel = Vector2(dash_speed * dir_look, 0.0)
 
@@ -250,6 +263,10 @@ func _start_dash() -> void:
 func _dash_step(delta: float) -> void:
 	_dash_vel.x = dash_speed * dir_look
 	_dash_vel.y += (gravity * - dash_gravity_scale + dash_lift_accel) * delta * up_direction.y
+	_afterimage_timer -= delta
+	if _afterimage_timer <= 0.0:
+		_afterimage_timer = afterimage_interval
+		_spawn_afterimage()
 
 func _end_dash(start_post_window: bool) -> void:
 	_is_dashing = false
@@ -260,6 +277,12 @@ func _end_dash(start_post_window: bool) -> void:
 		_post_dash_dir = dir_look
 
 func _jump(is_air_jump: bool) -> void:
+	_spawn_jump_particles()
+	_on_floor_timer = 0.0
+	if is_air_jump:
+		_air_jump_chain = min(_air_jump_chain + 1, air_jump_pitch_max_count)
+	else:
+		_air_jump_chain = 0
 	if _post_dash_jump_timer > 0.0 && (Input.get_action_strength("player_right") - Input.get_action_strength("player_left") != 0): # do hyper jump
 		_post_dash_jump_timer = 0.0
 		var boosted_x := (dash_speed * dash_jump_boost_mult) + dash_jump_boost_add
@@ -270,7 +293,7 @@ func _jump(is_air_jump: bool) -> void:
 		if _is_dashing:
 			_end_dash(false)
 			_vel.x = 0.0
-		_play_jump_sfx()
+		_play_jump_sfx(is_air_jump)
 		_vel.y = jump_speed * up_direction.y
 
 	if is_air_jump:
@@ -285,20 +308,78 @@ func _apply_move() -> void:
 	move_and_slide()
 	_vel = velocity
 
-func _play_jump_sfx() -> void:
+func _play_jump_sfx(is_air_jump: bool) -> void:
 	if _jump_player != null:
+		if is_air_jump:
+			var pitch_steps = max(1, _air_jump_chain)
+			_jump_player.pitch_scale = air_jump_pitch_base + air_jump_pitch_step * float(pitch_steps - 1)
+		else:
+			_jump_player.pitch_scale = 1.0
 		_jump_player.play()
 
 func _play_hyper_sfx() -> void:
-	if _jump_player != null:
+	if _hyper_player != null:
 		_hyper_player.play()
 
 func _play_dash_sfx() -> void:
 	if _dash_player != null:
 		_dash_player.play()
 
+func _spawn_jump_particles() -> void:
+	if jump_particle_scene == null:
+		return
+	var inst := jump_particle_scene.instantiate()
+	var particles := inst as CPUParticles2D
+	if particles == null:
+		inst.queue_free()
+		return
+	var parent := get_parent()
+	if parent != null:
+		parent.add_child(particles)
+	else:
+		add_child(particles)
+	particles.global_position = global_position
+	particles.emitting = false
+	particles.restart()
+	particles.emitting = true
+	var life = max(0.0, particles.lifetime) + 0.1
+	if life > 0.0:
+		var timer := get_tree().create_timer(life)
+		timer.timeout.connect(func():
+			if particles != null:
+				particles.queue_free()
+		)
+
+func _spawn_afterimage() -> void:
+	var src := get_node_or_null("Kitty") as Sprite2D
+	if src == null or src.texture == null:
+		return
+	var ghost := Sprite2D.new()
+	ghost.texture = src.texture
+	ghost.flip_h = src.flip_h
+	ghost.texture_filter = src.texture_filter
+	ghost.modulate = afterimage_color
+	ghost.z_index = src.z_index - 1
+	var parent := get_parent()
+	if parent != null:
+		parent.add_child(ghost)
+	else:
+		add_child(ghost)
+	ghost.global_transform = src.global_transform
+	var tween := create_tween()
+	tween.tween_property(ghost, "modulate:a", 0.0, afterimage_lifetime)
+	tween.tween_callback(func():
+		if ghost != null:
+			ghost.queue_free()
+	)
+
 func set_sprite_texture(tex: Texture2D) -> void:
 	var sprite := get_node_or_null("Kitty") as Sprite2D
 	if sprite == null or tex == null:
 		return
 	sprite.texture = tex
+
+func _get_tick_dt(delta: float) -> float:
+	if Engine.has_singleton("Game") and Game.has_method("get_tick_dt"):
+		return Game.get_tick_dt()
+	return delta

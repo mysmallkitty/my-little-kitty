@@ -19,7 +19,7 @@ func _connect_buttons() -> void:
 func refresh_from_api() -> void:
 	var me := _get_me_data()
 	if me.is_empty():
-		set_profile("guest", 0, null, null, false)
+		set_profile("click here to login", 0, null, null, false)
 		if player_sprite_button != null:
 			player_sprite_button.visible = false
 		return
@@ -36,8 +36,13 @@ func set_profile(username: String, level: int, picture: Texture2D, rank_texture:
 		username_label.text = username
 	if level_label != null:
 		level_label.text = str(level)
-	if profile_picture != null and picture != null:
-		profile_picture.texture = picture
+	if profile_picture != null:
+		if picture != null:
+			profile_picture.texture = picture
+			profile_picture.visible = true
+		else:
+			profile_picture.texture = null
+			profile_picture.visible = false
 	if rank_icon != null:
 		rank_icon.visible = show_rank and rank_texture != null
 		if rank_texture != null:

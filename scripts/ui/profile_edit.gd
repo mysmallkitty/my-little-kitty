@@ -65,7 +65,7 @@ func _set_active_color(index: int) -> void:
 		var item = _palette_items[i]
 		if item == null:
 			continue
-		item.modulate = Color(1, 1, 1, 1) if i == _active_color_index else Color(0.7, 0.7, 0.7, 1)
+		item.modulate = Color(0.7, 0.7, 0.7, 0.7) if i == _active_color_index else Color(1.0, 1.0, 1.0, 1.0)
 
 func _load_from_me() -> void:
 	if canvas == null:
@@ -87,7 +87,7 @@ func _load_from_me() -> void:
 func _on_upload_pressed() -> void:
 	if canvas == null:
 		return
-	var code := Game.profile_code_from_indices(canvas.get_pixels(),is_supporter)
+	var code := Game.profile_code_from_indices(canvas.get_pixels(),true)
 	if code == "":
 		Alert.push("invalid profile sprite", true)
 		return

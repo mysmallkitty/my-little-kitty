@@ -5,12 +5,13 @@ extends Node2D
 @export var ghost_scene: PackedScene = preload("res://objs/ghost_player.tscn")
 @export var tile_set: TileSet = preload("res://objs/tiles.tres")
 @export var camera_zoom := Vector2(1, 1)
-@export var camera_transition_time := 0.25
+@export var camera_transition_time := 0
 @export var debug_draw_chunks := false
 @export var death_fade_time := 0.2
 @export var death_fade_hold := 0.2
 @export var death_fade_delay := 0.7
 
+var _checkpoint_pos
 var accum_rate = 0.015
 var map_data: MapData
 var current_chunk: ChunkData
@@ -36,12 +37,14 @@ var ghosts: Dictionary = {}
 var _net_accum := 0.0
 var _name_cache: Dictionary = {}
 var _name_fetching: Dictionary = {}
+var _ghost_sprite_cache: Dictionary = {}
 var _chat_scene: PackedScene = preload("res://scripts/scene/chat.tscn")
 var _chat_line: LineEdit
 var _chat_open := false
 @onready var _total_death_label := $UI/Hud/TotalDeath
 @onready var _clear_time_label := $UI/Hud/ClearTime
 
+var pause_timer = true
 var _has_checkpoint := false
 var _awaiting_first_step := false
 var _pending_chunk_id := ""
@@ -52,6 +55,7 @@ var _map_cleared := false
 
 var _total_death = 0
 var _cleartime = 0
+var _cleartime_accum := 0.0
 
 var _death_streams: Array[AudioStream] = [
 	preload("res://audio/player/cat_cry0.wav"),
@@ -77,23 +81,38 @@ func _ready() -> void:
 	_update_current_chunk()
 	queue_redraw()
 
-func _process(delta: float) -> void:
-	if player == null or map_data == null:
-		return
-	_update_current_chunk()
-	_update_checkpoint_on_first_step()
-	_update_camera(delta)
-	_apply_boundary_rules()
-	_update_network(delta)
+func _process(_delta: float) -> void:
 	if debug_draw_chunks:
 		queue_redraw()
 
 func _physics_process(_delta):
 	if _map_cleared:
 		return
-	if player:
-		_cleartime += 1
+	var dt := _get_tick_dt(_delta)
+	if player == null or map_data == null:
+		return
+	_update_current_chunk()
+	_update_checkpoint_on_first_step()
+	_update_camera(dt)
+	if background != null:
+		background.sync_to_camera()
+	_apply_boundary_rules()
+	_update_network(dt)
+	if not pause_timer:
+		var ticks := int(ProjectSettings.get_setting("physics/common/physics_ticks_per_second", 60))
+		if ticks <= 0:
+			ticks = 60
+		_cleartime_accum += dt
+		var add_ticks := int(floor(_cleartime_accum * float(ticks)))
+		if add_ticks > 0:
+			_cleartime += add_ticks
+			_cleartime_accum -= float(add_ticks) / float(ticks)
 	_clear_time_label.text = Game._format_ticks(_cleartime)
+
+func _get_tick_dt(delta: float) -> float:
+	if Engine.has_singleton("Game") and Game.has_method("get_tick_dt"):
+		return Game.get_tick_dt()
+	return delta
 
 func _unhandled_input(event: InputEvent) -> void:
 	if _handle_chat_input(event):
@@ -169,10 +188,16 @@ func _spawn_player() -> void:
 	_apply_local_player_sprite()
 	var spawn_chunk := _get_start_chunk()
 	current_chunk = spawn_chunk
-	player.global_position = _spawn_position()
+	if not _has_checkpoint:
+		player.global_position = _spawn_position()
+		_cleartime = 0
+		_total_death = 0
+	else: player.global_position = _checkpoint_pos
 	if spawn_chunk != null:
 		_awaiting_first_step = false
 		_pending_chunk_id = spawn_chunk.id
+		_total_death_label.text = str(_total_death)
+	pause_timer = false
 
 func _setup_camera() -> void:
 	camera = Camera2D.new()
@@ -416,6 +441,7 @@ func _apply_boundary_rules() -> void:
 func _respawn() -> void:
 	if _respawning:
 		return
+	pause_timer = true
 	_respawning = true
 	_total_death += 1
 	_total_death_label.text = str(_total_death)
@@ -430,27 +456,13 @@ func _respawn() -> void:
 		await get_tree().create_timer(death_fade_delay).timeout
 	await _fade_death(1.0)
 	var respawn_chunk: ChunkData = null
-	var respawn_pos := Vector2.ZERO
-	var used_checkpoint := false
 	if _has_checkpoint:
-		var tile_pos := _world_to_tile(player._checkpoint_pos)
+		var tile_pos := _world_to_tile(_checkpoint_pos)
 		respawn_chunk = map_data.get_chunk_at_tile(tile_pos)
-		if respawn_chunk != null:
-			respawn_pos = player._checkpoint_pos
-			used_checkpoint = true
-
-	if respawn_chunk == null:
-		respawn_chunk = _get_start_chunk()
-		respawn_pos = _spawn_position()
 	current_chunk = respawn_chunk
-	_replace_player(respawn_pos, used_checkpoint)
+	_replace_player()
 	if current_chunk == _get_start_chunk():
-		_cleartime = 0
-		_total_death = 0
-		_total_death_label.text = str(_total_death)
-	if used_checkpoint:
-		_awaiting_first_step = false
-		_pending_chunk_id = ""
+		pass
 	else:
 		if respawn_chunk != null:
 			_awaiting_first_step = true
@@ -462,7 +474,7 @@ func _respawn() -> void:
 	_respawning = false
 
 
-func _replace_player(respawn_pos: Vector2, used_checkpoint: bool) -> void:
+func _replace_player() -> void:
 	if player != null:
 		player.queue_free()
 		player = null
@@ -473,17 +485,13 @@ func _replace_player(respawn_pos: Vector2, used_checkpoint: bool) -> void:
 	if player == null:
 		instance.queue_free()
 		return
-	add_child(player)
-	player.editor_mode = true
+	_spawn_player()
 	player.z_index = 10
 	player.signal_damaged.connect(_respawn)
 	player.signal_complete.connect(_on_map_cleared)
 	_apply_local_player_sprite()
-	player.global_position = respawn_pos
-	player.velocity = Vector2.ZERO
-	if used_checkpoint:
-		player._checkpoint_pos = respawn_pos
 	_refresh_death_particles()
+	pause_timer = false
 func _on_map_cleared() -> void:
 	if _map_cleared:
 		return
@@ -495,6 +503,8 @@ func _on_map_cleared() -> void:
 		map_data.metadata["verified_hash"] = map_data.compute_verified_hash()
 		if map_path.strip_edges() != "":
 			MapIO.save_map(map_path, map_data)
+	if Game.is_tutorial_map_path(map_path) or Game.is_tutorial_map_path(Game.current_map_path):
+		Game.mark_tutorial_completed()
 	_update_clear_panel()
 	if ws != null and ws.is_ready():
 		ws.send_clear(_cleartime, _total_death)
@@ -536,7 +546,7 @@ func _update_checkpoint_on_first_step() -> void:
 		return
 	var foot_tile := _world_to_tile(player.global_position) + Vector2i(0, 1)
 	var spawn_tile := foot_tile + Vector2i(0, -1)
-	player._checkpoint_pos = Vector2(spawn_tile) * MapData.TILE_SIZE
+	_checkpoint_pos = Vector2(spawn_tile) * MapData.TILE_SIZE
 	_has_checkpoint = true
 	_awaiting_first_step = false
 
@@ -620,12 +630,17 @@ func _on_pause_restart() -> void:
 	_has_checkpoint = false
 	_set_paused(false)
 	_respawn()
+	_cleartime = 0
+	_total_death = 0
+	
 
 func _on_pause_quit() -> void:
 	_set_paused(false)
 	_return_to_play_select()
 
 func _return_to_play_select() -> void:
+	if Game.is_tutorial_map_path(map_path) or Game.is_tutorial_map_path(Game.current_map_path):
+		Game.mark_tutorial_completed()
 	if ws != null:
 		ws.close()
 	var target := "res://roots/map_select_play.tscn"
@@ -669,7 +684,7 @@ func _set_player_sprite_alpha(alpha: float) -> void:
 	sprite.modulate = color
 
 func _setup_network() -> void:
-	if Game.current_map_id == "":
+	if Game.current_map_id == "" or Game.is_tutorial_map_path(map_path) or Game.is_tutorial_map_path(Game.current_map_path):
 		return
 	ws = WsSession.new()
 	add_child(ws)
@@ -750,6 +765,9 @@ func _spawn_ghost(peer_id: String, nickname: String) -> GhostPlayer:
 	_clear_chat_container(ghost)
 	ghost.z_index = 5
 	ghost.set_nickname(nickname)
+	var cached_tex = _ghost_sprite_cache.get(pid, null)
+	if cached_tex != null and ghost.has_method("set_sprite_texture"):
+		ghost.set_sprite_texture(cached_tex)
 	ghosts[pid] = ghost
 	return ghost
 
@@ -774,18 +792,21 @@ func _do_fetch_user_name(user_id: String) -> void:
 	var url := "/api/v1/user/%s" % uid
 	var result: Dictionary = await ApiClient.GET(url)
 	var _name := "(guest)"
+	var sprite_tex: Texture2D = null
 	if result.get("ok", false) and typeof(result.get("data", null)) == TYPE_DICTIONARY:
 		var data: Dictionary = result.get("data", {})
 		_name = str(data.get("username", data.get("name", _name)))
 		var sprite_code := str(data.get("player_sprite", ""))
-		var g = ghosts.get(uid, null)
-		if g != null and g.has_method("set_sprite_texture"):
-			g.set_sprite_texture(Game.get_player_texture(sprite_code))
+		sprite_tex = Game.get_player_texture(sprite_code)
 	_name_cache[uid] = _name
+	if sprite_tex != null:
+		_ghost_sprite_cache[uid] = sprite_tex
 	_name_fetching.erase(uid)
 	var g = ghosts.get(uid, null)
 	if g != null:
 		g.set_nickname(_name)
+		if sprite_tex != null and g.has_method("set_sprite_texture"):
+			g.set_sprite_texture(sprite_tex)
 
 func _apply_local_player_sprite() -> void:
 	if player == null:

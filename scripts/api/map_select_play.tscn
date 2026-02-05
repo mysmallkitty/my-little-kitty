@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://c1ng3di5wq0u2"]
+[gd_scene load_steps=22 format=3 uid="uid://sl0k2wlr8eie"]
 
 [ext_resource type="Script" uid="uid://b18q2cf72e7ae" path="res://scripts/map/map_select.gd" id="1_1d6cd"]
 [ext_resource type="Script" uid="uid://b8yybj7rf263y" path="res://scripts/map/map_background.gd" id="2_6l04a"]
@@ -54,7 +54,7 @@ layout_mode = 0
 offset_left = 170.0
 offset_right = 320.0
 
-[node name="SearchButton(WIP)" parent="UI/Hud" instance=ExtResource("8_apw2l")]
+[node name="SearchButton" parent="UI/Hud" instance=ExtResource("8_apw2l")]
 layout_mode = 1
 offset_left = 276.16
 offset_top = -15.940001

@@ -95,6 +95,9 @@ func _process(_delta: float) -> void:
 	if _follow_camera != null:
 		_sync_to_camera()
 
+func sync_to_camera() -> void:
+	_sync_to_camera()
+
 func _sync_to_camera() -> void:
 	if _follow_camera == null:
 		return
@@ -110,4 +113,3 @@ func _get_target_size() -> Vector2:
 	if _follow_camera != null:
 		size /= _follow_camera.zoom
 	return size
-

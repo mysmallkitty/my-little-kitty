@@ -1,0 +1,76 @@
+[gd_scene load_steps=6 format=3 uid="uid://b8llssoxm42cr"]
+
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_yo7qf"]
+[ext_resource type="PackedScene" uid="uid://dli2pb8ippthn" path="res://ui/button_big.tscn" id="2_lpbbo"]
+[ext_resource type="Texture2D" uid="uid://cvsm2biosg2mh" path="res://graphics/ui/8px/simple/user.png" id="3_6b3gk"]
+[ext_resource type="Texture2D" uid="uid://r283sjscesrm" path="res://graphics/ui/8px/crown.png" id="4_0nrg8"]
+[ext_resource type="PackedScene" uid="uid://cak20fbe3l4fn" path="res://ui/kittynet/user_panel.tscn" id="5_6b3gk"]
+
+[node name="Kittynet" type="Control"]
+layout_mode = 3
+anchor_right = 0.93100005
+anchor_bottom = 1.0
+offset_right = 0.07998657
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_yo7qf")
+
+[node name="Panel" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 297.0
+offset_bottom = 179.0
+
+[node name="MyPage" parent="Panel" instance=ExtResource("2_lpbbo")]
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 16.0
+offset_top = 144.0
+offset_right = 40.0
+offset_bottom = 168.0
+icon_texture = ExtResource("3_6b3gk")
+
+[node name="GlobalRank" parent="Panel" instance=ExtResource("2_lpbbo")]
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 48.0
+offset_top = 144.0
+offset_right = 72.0
+offset_bottom = 168.0
+icon_texture = ExtResource("4_0nrg8")
+
+[node name="Players" type="GridContainer" parent="Panel"]
+clip_contents = true
+layout_direction = 2
+layout_mode = 0
+offset_left = 10.0
+offset_top = 33.0
+offset_right = 256.0
+offset_bottom = 128.0
+columns = 2
+
+[node name="UserPanel" parent="Panel/Players" instance=ExtResource("5_6b3gk")]
+layout_mode = 2
+
+[node name="LineEdit" type="LineEdit" parent="Panel"]
+layout_mode = 0
+offset_left = 18.0
+offset_top = 17.0
+offset_right = 278.0
+offset_bottom = 24.0
+placeholder_text = "search players"
+
+[node name="Label" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 136.0
+offset_top = 7.0
+offset_right = 176.0
+offset_bottom = 14.0
+text = "world kittys"

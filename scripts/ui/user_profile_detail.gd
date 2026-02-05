@@ -15,6 +15,7 @@ var user_id = -1
 @onready var total_pp_icon = $PPIcon
 @onready var profile_pic: TextureRect = $ProfilePic
 @onready var edit_button = $EditButton
+@onready var player_sprite_button = $PlayerSpriteButton
 
 func _ready() -> void:
 	super()
@@ -39,6 +40,8 @@ func _connect_buttons() -> void:
 		close_button.pressed.connect(_on_close_pressed)
 	if edit_button != null and not edit_button.pressed.is_connected(_on_edit_pressed):
 		edit_button.pressed.connect(_on_edit_pressed)
+	if player_sprite_button != null and not player_sprite_button.pressed.is_connected(_on_player_sprite_pressed):
+		player_sprite_button.pressed.connect(_on_player_sprite_pressed)
 	if profile_pic != null and not profile_pic.gui_input.is_connected(_on_profile_pic_input):
 		profile_pic.gui_input.connect(_on_profile_pic_input)
 
@@ -47,6 +50,14 @@ func _on_close_pressed() -> void:
 
 func _on_edit_pressed() -> void:
 	var panels := get_tree().get_nodes_in_group("profile_edit_panels")
+	if panels.is_empty():
+		return
+	var editor := panels[0]
+	if editor != null and editor.has_method("open_for_me"):
+		editor.open_for_me()
+
+func _on_player_sprite_pressed() -> void:
+	var panels := get_tree().get_nodes_in_group("player_sprite_edit_panels")
 	if panels.is_empty():
 		return
 	var editor := panels[0]
@@ -64,7 +75,7 @@ func _on_profile_pic_input(event: InputEvent) -> void:
 func _apply_user(user: Dictionary) -> void:
 	if not user.is_empty():
 		user_id = int(user.get("id", user.get("user_id", -1)))
-		username_label.text = str(user.get("username", "guest")) + " (" + str(int(user.get("level", 0))) + ")"
+		username_label.text = str(user.get("username", "guest"))
 		var rank = user.get("rank", null)
 		rank_label.text = "#%s" % str(int(rank)) if rank != null else "#--"
 		play_label.text = str(int(user.get("total_attempts", 0)))
@@ -88,6 +99,8 @@ func _apply_user(user: Dictionary) -> void:
 				profile_pic.texture = load("res://graphics/ui/16px/user_guest.png")
 	if edit_button != null:
 		edit_button.visible = _is_me(user)
+	if player_sprite_button != null:
+		player_sprite_button.visible = _is_me(user) and _is_supporter(user)
 
 func _format_date(value: String) -> String:
 	if value == "":
@@ -119,3 +132,6 @@ func _is_me(user: Dictionary) -> bool:
 	if me.is_empty():
 		return false
 	return int(me.get("id", -1)) == int(user.get("id", user.get("user_id", -2)))
+
+func _is_supporter(user: Dictionary) -> bool:
+	return str(user.get("role", "")) == "sup"

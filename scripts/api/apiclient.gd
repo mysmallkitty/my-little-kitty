@@ -119,8 +119,8 @@ func _check_server_health() -> void:
 		return
 	var data = result.get("data", null)
 	if typeof(data) == TYPE_DICTIONARY:
-		var status := str(data.get("status", ""))
-		Alert.push("server status: %s" % status, status != "ok")
+		#var status := str(data.get("status", ""))
+		#Alert.push("server status: %s" % status, status != "ok")
 		is_server_down = true
 
 func _make_url(path: String) -> String:

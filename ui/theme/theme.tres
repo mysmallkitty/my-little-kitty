@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=8 format=3 uid="uid://d3qrjbdprxnyr"]
+[gd_resource type="Theme" load_steps=17 format=3 uid="uid://d3qrjbdprxnyr"]
 
 [ext_resource type="StyleBox" uid="uid://bsihf1gxw4mcx" path="res://ui/theme/style_box_empty.tres" id="1_7181q"]
 [ext_resource type="Texture2D" uid="uid://dhujw0tl52ny2" path="res://graphics/ui/buttons/checkbox_enabled.png" id="2_4v5r2"]
@@ -6,7 +6,22 @@
 [ext_resource type="FontFile" uid="uid://buy41f1xmjgsc" path="res://graphics/aseprite.otf" id="3_f2hgy"]
 [ext_resource type="StyleBox" uid="uid://cafusxbvxyy3k" path="res://ui/theme/textedit.tres" id="3_g4415"]
 [ext_resource type="Texture2D" uid="uid://urfbk4d1tcf8" path="res://graphics/ui/buttons/check_disabled.png" id="3_yhl4s"]
+[ext_resource type="Texture2D" uid="uid://dpv13hjs3ufsx" path="res://graphics/ui/panels/hv.png" id="4_3dnyl"]
 [ext_resource type="StyleBox" uid="uid://0fx8m74q1h85" path="res://ui/theme/panel.tres" id="4_m0ati"]
+[ext_resource type="Texture2D" uid="uid://tik3fpyeqbrv" path="res://graphics/ui/panels/tick.png" id="5_vfm3h"]
+[ext_resource type="Texture2D" uid="uid://6adfm700qxcn" path="res://graphics/ui/8px/simple/enter.png" id="8_vfm3h"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_vfm3h"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3dnyl"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2tfwj"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_qf46q"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_0pmcw"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_i7twj"]
 
 [resource]
 default_font = ExtResource("3_f2hgy")
@@ -21,8 +36,34 @@ Button/styles/hover = ExtResource("1_7181q")
 Button/styles/hover_mirrored = ExtResource("1_7181q")
 Button/styles/normal = ExtResource("1_7181q")
 Button/styles/pressed = ExtResource("1_7181q")
+CheckButton/constants/align_to_largest_stylebox = 0
+CheckButton/constants/check_v_offset = 0
+CheckButton/constants/h_separation = 0
+CheckButton/constants/icon_max_width = 0
+CheckButton/constants/line_spacing = 0
+CheckButton/constants/outline_size = 0
+CheckButton/font_sizes/font_size = 7
 CheckButton/icons/checked = ExtResource("2_4v5r2")
+CheckButton/icons/checked_disabled = ExtResource("2_4v5r2")
+CheckButton/icons/checked_disabled_mirrored = ExtResource("3_yhl4s")
+CheckButton/icons/checked_mirrored = ExtResource("2_4v5r2")
 CheckButton/icons/unchecked = ExtResource("3_yhl4s")
+CheckButton/icons/unchecked_disabled = ExtResource("3_yhl4s")
+CheckButton/icons/unchecked_disabled_mirrored = ExtResource("3_yhl4s")
+CheckButton/icons/unchecked_mirrored = ExtResource("3_yhl4s")
+CheckButton/styles/disabled_mirrored = SubResource("StyleBoxEmpty_vfm3h")
+CheckButton/styles/focus = SubResource("StyleBoxEmpty_3dnyl")
+CheckButton/styles/hover_mirrored = SubResource("StyleBoxEmpty_2tfwj")
+CheckButton/styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_qf46q")
+CheckButton/styles/normal_mirrored = SubResource("StyleBoxEmpty_0pmcw")
+CheckButton/styles/pressed_mirrored = SubResource("StyleBoxEmpty_i7twj")
+HSlider/icons/grabber = ExtResource("4_3dnyl")
+HSlider/icons/grabber_disabled = ExtResource("4_3dnyl")
+HSlider/icons/grabber_highlight = ExtResource("4_3dnyl")
+HSlider/icons/tick = ExtResource("5_vfm3h")
+HSlider/styles/grabber_area = ExtResource("3_g4415")
+HSlider/styles/grabber_area_highlight = ExtResource("3_g4415")
+HSlider/styles/slider = ExtResource("3_g4415")
 LineEdit/colors/caret_color = Color(0.95, 0.95, 0.95, 1)
 LineEdit/colors/font_outline_color = Color(0, 0, 0, 1)
 LineEdit/font_sizes/font_size = 7
@@ -30,4 +71,12 @@ LineEdit/icons/clear = ExtResource("2_cms1n")
 LineEdit/styles/focus = ExtResource("3_g4415")
 LineEdit/styles/normal = ExtResource("3_g4415")
 LineEdit/styles/read_only = ExtResource("3_g4415")
+OptionButton/icons/arrow = ExtResource("8_vfm3h")
+OptionButton/styles/disabled = ExtResource("3_g4415")
+OptionButton/styles/disabled_mirrored = ExtResource("3_g4415")
+OptionButton/styles/focus = ExtResource("3_g4415")
+OptionButton/styles/hover = ExtResource("3_g4415")
+OptionButton/styles/hover_mirrored = ExtResource("3_g4415")
+OptionButton/styles/normal = ExtResource("3_g4415")
+OptionButton/styles/pressed = ExtResource("3_g4415")
 Panel/styles/panel = ExtResource("4_m0ati")

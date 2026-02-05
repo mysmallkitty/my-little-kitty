@@ -60,6 +60,8 @@ func _apply_data() -> void:
 		difficulty_icon.texture = null
 	if ranked_icon != null:
 		ranked_icon.visible = bool(data.get("is_ranked", false))
+	if liked_icon != null:
+		liked_icon.visible = bool(data.get("is_loved", false))
 	_update_difficulty_icon(int(data.get("rating", meta.get("rating", 1))))
 
 func set_selected(selected: bool) -> void:

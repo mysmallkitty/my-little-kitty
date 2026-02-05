@@ -18,6 +18,7 @@ var _page := 1
 var _loading := false
 var _has_more := true
 var _preview_request_id := 0
+var _map_filters: Dictionary = {}
 
 func _ready() -> void:
 	Game.ensure_dirs()
@@ -42,6 +43,15 @@ func _connect_root_buttons() -> void:
 	var create_button := get_node_or_null("UI/Hud/Back2") as BaseButton
 	if create_button != null and not create_button.pressed.is_connected(_on_create_pressed):
 		create_button.pressed.connect(_on_create_pressed)
+	var search_button := get_node_or_null("UI/Hud/SearchButton") as BaseButton
+	if search_button == null:
+		search_button = get_node_or_null("UI/Hud/SearchButton(WIP)") as BaseButton
+	if search_button == null:
+		search_button = find_child("SearchButton", true, false) as BaseButton
+	if search_button == null:
+		search_button = find_child("SearchButton(WIP)", true, false) as BaseButton
+	if search_button != null and not search_button.pressed.is_connected(_on_search_pressed):
+		search_button.pressed.connect(_on_search_pressed)
 
 func _connect_panels() -> void:
 	if mode == "play":
@@ -53,6 +63,9 @@ func _connect_panels() -> void:
 				detail_panel.leaderboard_pressed.connect(_on_leaderboard_pressed)
 			if not detail_panel.stats_pressed.is_connected(_on_stats_pressed):
 				detail_panel.stats_pressed.connect(_on_stats_pressed)
+			if detail_panel.has_signal("loved_pressed"):
+				if not detail_panel.loved_pressed.is_connected(_on_loved_pressed):
+					detail_panel.loved_pressed.connect(_on_loved_pressed)
 		var stats_panel := _get_stats_panel()
 		if stats_panel != null and not stats_panel.close_pressed.is_connected(_on_stats_close_pressed):
 			stats_panel.close_pressed.connect(_on_stats_close_pressed)
@@ -61,6 +74,16 @@ func _connect_panels() -> void:
 			leaderboard_panel.close_pressed.connect(_on_leaderboard_close_pressed)
 		if leaderboard_panel != null and not leaderboard_panel.user_selected.is_connected(_on_leaderboard_user_selected):
 			leaderboard_panel.user_selected.connect(_on_leaderboard_user_selected)
+		var search_panel := _get_search_panel()
+		if search_panel != null:
+			if search_panel.has_signal("apply_requested"):
+				var apply_callable = Callable(self, "_on_search_apply_requested")
+				if not search_panel.is_connected("apply_requested", apply_callable):
+					search_panel.connect("apply_requested", apply_callable, CONNECT_DEFERRED)
+			if search_panel.has_signal("reset_requested"):
+				var reset_callable = Callable(self, "_on_search_reset_requested")
+				if not search_panel.is_connected("reset_requested", reset_callable):
+					search_panel.connect("reset_requested", reset_callable, CONNECT_DEFERRED)
 	else:
 		var editor_panel := _get_editor_detail_panel()
 		if editor_panel != null:
@@ -170,14 +193,18 @@ func _request_next_page() -> void:
 	if _loading or not _has_more:
 		return
 	_loading = true
-	var result: Dictionary = await MapService.list_maps(_page, page_size)
+	var result: Dictionary = await MapService.list_maps(_page, page_size, _map_filters)
 	_loading = false
 	if not result.get("ok", false):
 		_has_more = false
 		return
 	var items: Array = []
 	var payload = result.get("data", null)
-	if typeof(payload) == TYPE_ARRAY:
+	if typeof(payload) == TYPE_DICTIONARY:
+		var maybe_items = payload.get("items", [])
+		if typeof(maybe_items) == TYPE_ARRAY:
+			items = maybe_items
+	elif typeof(payload) == TYPE_ARRAY:
 		items = payload
 	if items.is_empty():
 		_has_more = false
@@ -265,6 +292,9 @@ func _on_item_pressed(item: MapRow) -> void:
 		_items[i].set_selected(i == _selected_index)
 	_center_on_selected()
 	_update_detail_panel()
+	var leaderboard_panel := _get_leaderboard_panel()
+	if leaderboard_panel != null and leaderboard_panel.visible:
+		_load_leaderboard()
 	_request_preview_for_selected()
 
 func _update_detail_panel() -> void:
@@ -424,6 +454,30 @@ func _on_create_close() -> void:
 func _on_create_requested(title: String) -> void:
 	_create_new_map(title)
 
+func _on_search_pressed() -> void:
+	print("hi")
+	if mode != "play":
+		return
+	var search_panel := _get_search_panel()
+	if search_panel == null:
+		return
+	if search_panel.visible:
+		_show_hide_popup(search_panel, false)
+		return
+	if search_panel.has_method("set_filters"):
+		search_panel.set_filters(_map_filters)
+	_show_popup(search_panel)
+
+func _on_search_apply_requested(filters: Dictionary) -> void:
+	_map_filters = filters
+	_show_hide_popup(_get_search_panel(), false)
+	_refresh_list()
+
+func _on_search_reset_requested() -> void:
+	_map_filters = {}
+	_show_hide_popup(_get_search_panel(), false)
+	_refresh_list()
+
 func _on_leaderboard_pressed() -> void:
 	var leaderboard_panel := _get_leaderboard_panel()
 	if leaderboard_panel == null:
@@ -449,6 +503,37 @@ func _on_stats_pressed() -> void:
 	_show_hide_popup(_get_leaderboard_panel(), false)
 	_update_stats_panel()
 	_show_popup(stats_panel)
+
+func _on_loved_pressed() -> void:
+	if mode != "play":
+		return
+	if _selected_index < 0 or _selected_index >= _items.size():
+		return
+	if not _is_logged_in():
+		_open_auth_panel()
+		return
+	var entry: Dictionary = _items[_selected_index].data
+	var map_id := str(entry.get("id", ""))
+	if map_id == "":
+		return
+	var was_loved := bool(entry.get("is_loved", false))
+	var result: Dictionary = await MapService.toggle_loved(map_id)
+	if not result.get("ok", false):
+		Alert.push(ApiClient._error_message(result), true)
+		return
+	var data = result.get("data", null)
+	if typeof(data) == TYPE_DICTIONARY:
+		var is_loved := bool(data.get("is_loved", false))
+		entry["is_loved"] = is_loved
+		var current_count := int(entry.get("loved_count", 0))
+		if is_loved and not was_loved:
+			current_count += 1
+		elif not is_loved and was_loved and current_count > 0:
+			current_count -= 1
+		entry["loved_count"] = current_count
+		_entries[_selected_index] = entry
+		_items[_selected_index].set_data(entry)
+		_update_detail_panel()
 
 func _on_stats_close_pressed() -> void:
 	_show_hide_popup(_get_stats_panel(), false)
@@ -836,6 +921,9 @@ func _get_stats_panel() -> MapSelectStatsPanel:
 
 func _get_leaderboard_panel() -> MapSelectLeaderboardPanel:
 	return get_node_or_null("UI/LeaderBoard") as MapSelectLeaderboardPanel
+
+func _get_search_panel() -> Control:
+	return get_node_or_null("UI/SearchFilter") as Control
 
 func _get_create_panel() -> Control:
 	var panel := get_node_or_null("UI/CreateNewMap") as Control

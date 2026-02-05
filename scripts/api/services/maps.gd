@@ -3,9 +3,35 @@ class_name MapService
 
 const BASE_PATH := "/api/v1/maps/"
 
-static func list_maps(page: int, size: int) -> Dictionary:
-	var url := "%s?page=%d&size=%d" % [BASE_PATH, page, size]
+static func list_maps(page: int, size: int, filters: Dictionary = {}) -> Dictionary:
+	var params := {}
+	params["size"] = size
+	params["offset"] = max(0, (page - 1) * size)
+	for key in filters.keys():
+		var value = filters.get(key, null)
+		if value == null:
+			continue
+		if typeof(value) == TYPE_STRING and str(value).strip_edges() == "":
+			continue
+		params[key] = value
+	var query := _build_query(params)
+	var url := BASE_PATH
+	if query != "":
+		url = "%s?%s" % [BASE_PATH, query]
 	return await ApiClient.GET(url)
+
+static func _build_query(params: Dictionary) -> String:
+	var parts: Array[String] = []
+	for key in params.keys():
+		var value = params[key]
+		var text := ""
+		match typeof(value):
+			TYPE_BOOL:
+				text = "true" if value else "false"
+			_:
+				text = str(value)
+		parts.append("%s=%s" % [str(key).uri_encode(), text.uri_encode()])
+	return "&".join(parts)
 
 static func increment_play(map_id: int) -> Dictionary:
 	return await ApiClient.POST("%s%d/play" % [BASE_PATH, map_id], {})
@@ -21,6 +47,9 @@ static func download_preview(map_id: String) -> Dictionary:
 
 static func fetch_leaderboard(map_id: String) -> Dictionary:
 	return await ApiClient.GET("%s%s/leaderboard" % [BASE_PATH, map_id])
+
+static func toggle_loved(map_id: String) -> Dictionary:
+	return await ApiClient.POST("%s%s/loved" % [BASE_PATH, map_id], {})
 
 static func upload_map(map_data: MapData, map_bytes: PackedByteArray, preview_bytes: PackedByteArray, map_id: int = -1) -> Dictionary:
 	if map_data == null:

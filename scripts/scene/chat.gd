@@ -7,6 +7,7 @@ var fade_meter := 5.0
 
 func _ready() -> void:
 	sfx_player.stream = load("res://audio/chat.wav")
+	sfx_player.bus = "sfx"
 	add_child(sfx_player)
 	sfx_player.play()
 

@@ -2,6 +2,7 @@ extends Node2D
 
 @export var map_select_play_scene := "res://roots/map_select_play.tscn"
 @export var map_select_editor_scene := "res://roots/map_select_editor.tscn"
+@export var settings_panel_scene: PackedScene = preload("res://ui/panels/settings_panel.tscn")
 
 var play_button: BaseButton
 var editor_button: BaseButton
@@ -9,14 +10,22 @@ var settings_button: BaseButton
 var profile_panel: Control
 var auth_panel: Control
 var profile_detail: Control
+var settings_panel: SettingsPanel
 
 func _ready() -> void:
 	Game.ensure_dirs()
 	_bind_ui()
 	_connect_buttons()
 	_setup_profile_click()
+	_setup_settings_panel()
 	if auth_panel != null:
 		auth_panel.visible = false
+	if Game.should_force_tutorial():
+		Game.current_map_path = Game.TUTORIAL_MAP_PATH
+		Game.current_map_data = null
+		Game.current_map_id = ""
+		Game.return_scene = "res://roots/main_menu.tscn"
+		_change_scene("res://roots/map_play.tscn")
 
 func _connect_buttons() -> void:
 	if play_button != null and not play_button.pressed.is_connected(_on_play_pressed):
@@ -49,8 +58,12 @@ func _on_editor_pressed() -> void:
 	_change_scene(map_select_editor_scene)
 
 func _on_settings_pressed() -> void:
-	# TODO: settings panel hookup
-	pass
+	if settings_panel == null:
+		return
+	if settings_panel.visible:
+		settings_panel.close()
+	else:
+		settings_panel.open()
 
 func _open_auth_panel() -> void:
 	if auth_panel == null:
@@ -88,6 +101,22 @@ func _bind_ui() -> void:
 	profile_panel = get_node_or_null("UI/ProfilePanel") as Control
 	auth_panel = get_node_or_null("UI/AuthPanel") as Control
 	profile_detail = get_node_or_null("UI/UserProfileDetail") as Control
+
+func _setup_settings_panel() -> void:
+	settings_panel = get_node_or_null("UI/SettingsPanel") as SettingsPanel
+	if settings_panel != null:
+		settings_panel.visible = false
+		return
+	if settings_panel_scene == null:
+		return
+	var ui_layer := get_node_or_null("UI") as CanvasLayer
+	if ui_layer == null:
+		return
+	settings_panel = settings_panel_scene.instantiate() as SettingsPanel
+	if settings_panel == null:
+		return
+	settings_panel.visible = false
+	ui_layer.add_child(settings_panel)
 
 func _find_button(path: String, _name: String) -> BaseButton:
 	var node := get_node_or_null(path)

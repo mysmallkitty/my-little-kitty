@@ -23,6 +23,7 @@ var audio_stream := AudioStreamPlayer.new()
 func _ready() -> void:
 	focus_mode = Control.FOCUS_NONE
 	audio_stream.stream = click_sound
+	audio_stream.bus = "sfx"
 	_base_position = position
 	set_process(true)
 	_apply_icon()

@@ -6,6 +6,10 @@ const CACHE_DIR := "user://maps/cache"
 const MAP_CACHE_DIR := "user://maps/cache/maps"
 const PREVIEW_CACHE_DIR := "user://maps/cache/previews"
 const CACHE_META_DIR := "user://maps/cache/meta"
+const TUTORIAL_MAP_PATH := "user://maps/wip/tutorial.kittymap"
+const TUTORIAL_STATE_PATH := "user://tutorial_state.json"
+const TUTORIAL_BUNDLED_PATH := "res://maps/tutorial.kittymap"
+const TUTORIAL_B64 := """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"""
 
 var current_map_path: String = ""
 var current_map_id: String = ""
@@ -34,10 +38,38 @@ var _player_texture_cache: Dictionary = {}
 var _player_palette: Array = []
 
 func _ready() -> void:
+	_ensure_audio_layout()
+	_load_settings()
 	_apply_audio()
+	Engine.max_physics_steps_per_frame = 1
 	Engine.max_fps = 60
 	_profile_palette = Palatte.new().colors_64
 	_player_palette = _build_player_palette()
+
+func get_tick_dt() -> float:
+	var ticks := int(Engine.physics_ticks_per_second)
+	if ticks <= 0:
+		ticks = 60
+	return 1.0 / float(ticks)
+
+func _ensure_audio_layout() -> void:
+	var layout := load("res://audio/audio_bus.tres")
+	if layout is AudioBusLayout:
+		AudioServer.set_bus_layout(layout)
+
+func _load_settings() -> void:
+	var cfg := ConfigFile.new()
+	if cfg.load("user://settings.cfg") != OK:
+		return
+	master_volume = clampf(float(cfg.get_value("audio", "master", master_volume)), 0.0, 1.0)
+	bgm_volume = clampf(float(cfg.get_value("audio", "bgm", bgm_volume)), 0.0, 1.0)
+	sfx_volume = clampf(float(cfg.get_value("audio", "sfx", sfx_volume)), 0.0, 1.0)
+	if cfg.has_section_key("audio", "master_db"):
+		master_volume = clampf(db_to_linear(float(cfg.get_value("audio", "master_db", linear_to_db(master_volume)))), 0.0, 1.0)
+	if cfg.has_section_key("audio", "bgm_db"):
+		bgm_volume = clampf(db_to_linear(float(cfg.get_value("audio", "bgm_db", linear_to_db(bgm_volume)))), 0.0, 1.0)
+	if cfg.has_section_key("audio", "sfx_db"):
+		sfx_volume = clampf(db_to_linear(float(cfg.get_value("audio", "sfx_db", linear_to_db(sfx_volume)))), 0.0, 1.0)
 
 func ensure_dirs() -> void:
 	DirAccess.make_dir_recursive_absolute(WIP_DIR)
@@ -46,6 +78,75 @@ func ensure_dirs() -> void:
 	DirAccess.make_dir_recursive_absolute(MAP_CACHE_DIR)
 	DirAccess.make_dir_recursive_absolute(PREVIEW_CACHE_DIR)
 	DirAccess.make_dir_recursive_absolute(CACHE_META_DIR)
+	_ensure_tutorial_map()
+
+func _ensure_tutorial_map() -> void:
+	if FileAccess.file_exists(TUTORIAL_MAP_PATH):
+		return
+	if not FileAccess.file_exists(TUTORIAL_BUNDLED_PATH):
+		_write_tutorial_from_b64()
+		return
+	var src := FileAccess.open(TUTORIAL_BUNDLED_PATH, FileAccess.READ)
+	if src == null:
+		_write_tutorial_from_b64()
+		return
+	var bytes := src.get_buffer(src.get_length())
+	src.close()
+	if bytes.is_empty():
+		_write_tutorial_from_b64()
+		return
+	var dst := FileAccess.open(TUTORIAL_MAP_PATH, FileAccess.WRITE)
+	if dst == null:
+		_write_tutorial_from_b64()
+		return
+	dst.store_buffer(bytes)
+	dst.close()
+
+func _write_tutorial_from_b64() -> void:
+	if TUTORIAL_B64.strip_edges() == "":
+		return
+	var bytes := Marshalls.base64_to_raw(TUTORIAL_B64)
+	if bytes.is_empty():
+		return
+	var dst := FileAccess.open(TUTORIAL_MAP_PATH, FileAccess.WRITE)
+	if dst == null:
+		return
+	dst.store_buffer(bytes)
+	dst.close()
+
+func should_force_tutorial() -> bool:
+	return not has_completed_tutorial() and FileAccess.file_exists(TUTORIAL_MAP_PATH)
+
+func has_completed_tutorial() -> bool:
+	if not FileAccess.file_exists(TUTORIAL_STATE_PATH):
+		return false
+	var file := FileAccess.open(TUTORIAL_STATE_PATH, FileAccess.READ)
+	if file == null:
+		return false
+	var text := file.get_as_text()
+	file.close()
+	var parsed: Variant = JSON.parse_string(text)
+	if typeof(parsed) != TYPE_DICTIONARY:
+		return false
+	var data: Dictionary = parsed
+	return bool(data.get("completed", false))
+
+func mark_tutorial_completed() -> void:
+	var file := FileAccess.open(TUTORIAL_STATE_PATH, FileAccess.WRITE)
+	if file == null:
+		return
+	var payload := {
+		"completed": true,
+		"completed_at": int(Time.get_unix_time_from_system()),
+	}
+	file.store_string(JSON.stringify(payload, ""))
+	file.close()
+
+func is_tutorial_map_path(path: String) -> bool:
+	if path.strip_edges() == "":
+		return false
+	var normalized := path.replace("\\", "/")
+	return normalized.ends_with("/tutorial.kittymap")
 
 func cache_map(map_id: String, map_data: MapData) -> void:
 	if map_id == "" or map_data == null:
@@ -58,17 +159,17 @@ func get_cached_map(map_id: String) -> MapData:
 	return null
 
 func get_rank_from_total_pp(pp) -> int:
-	if pp < 500:
+	if pp < 300:
 		return 1
-	elif pp < 1000:
+	elif pp < 2000:
 		return 2
-	elif pp < 2500:
-		return 3
 	elif pp < 5000:
+		return 3
+	elif pp < 9000:
 		return 4
-	elif pp < 10000:
+	elif pp < 14000:
 		return 5
-	elif pp < 20000:
+	elif pp < 18000:
 		return 6
 	return 7
 
@@ -90,11 +191,22 @@ func _apply_audio() -> void:
 	_set_bus_volume("sfx", sfx_volume)
 
 func _set_bus_volume(bus_name: String, value: float) -> void:
-	var idx := AudioServer.get_bus_index(bus_name)
+	var idx := _ensure_bus(bus_name)
 	if idx < 0:
 		return
 	var db := linear_to_db(value)
 	AudioServer.set_bus_volume_db(idx, db)
+
+func _ensure_bus(bus_name: String) -> int:
+	var idx := AudioServer.get_bus_index(bus_name)
+	if idx >= 0:
+		return idx
+	AudioServer.add_bus()
+	idx = AudioServer.get_bus_count() - 1
+	AudioServer.set_bus_name(idx, bus_name)
+	if bus_name != "Master":
+		AudioServer.set_bus_send(idx, "Master")
+	return idx
 
 func _format_ticks(frames: int) -> String:
 	var ticks := int(ProjectSettings.get_setting("physics/common/physics_ticks_per_second", 60))

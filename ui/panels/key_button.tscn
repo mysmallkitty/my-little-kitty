@@ -1,0 +1,43 @@
+[gd_scene load_steps=6 format=3 uid="uid://l7qwy4ag70qt"]
+
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_3au0b"]
+[ext_resource type="Texture2D" uid="uid://bxystehtn3tci" path="res://graphics/ui/key.png" id="1_ndx8k"]
+[ext_resource type="Texture2D" uid="uid://03c1vksteqbr" path="res://graphics/ui/key_down.png" id="2_3au0b"]
+[ext_resource type="Texture2D" uid="uid://62iipdp8064g" path="res://graphics/ui/8px/simple/back.png" id="4_rx0t5"]
+[ext_resource type="Script" uid="uid://b4yfxmmp2gq12" path="res://scripts/ui/key_button.gd" id="5_keybtn"]
+
+[node name="Key" type="TextureButton"]
+offset_left = 19.0
+offset_top = 66.0
+offset_right = 35.0
+offset_bottom = 82.0
+theme = ExtResource("1_3au0b")
+texture_normal = ExtResource("1_ndx8k")
+texture_pressed = ExtResource("2_3au0b")
+script = ExtResource("5_keybtn")
+
+[node name="Key" type="Label" parent="."]
+layout_mode = 0
+offset_left = -18.0
+offset_top = 2.0
+offset_right = 36.0
+offset_bottom = 9.0
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "A"
+horizontal_alignment = 1
+
+[node name="Arrow" type="TextureRect" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.312
+anchor_right = 0.5
+anchor_bottom = 0.312
+offset_left = -4.0
+offset_top = -3.992
+offset_right = 4.0
+offset_bottom = 4.008
+rotation = -0.0014779707
+pivot_offset = Vector2(4, 4)
+texture = ExtResource("4_rx0t5")

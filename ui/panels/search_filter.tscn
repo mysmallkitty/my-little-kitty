@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://bn77q56ga66bb"]
+[gd_scene load_steps=8 format=3 uid="uid://bn77q56ga66bb"]
 
 [ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_u83ly"]
-[ext_resource type="Script" uid="uid://dn25igyfb8oej" path="res://scripts/ui/popup_panel.gd" id="2_qq28p"]
+[ext_resource type="Script" uid="uid://n7x7m0og06ygi" path="res://scripts/map/select/panels/map_search_filter.gd" id="2_v1k2n"]
 [ext_resource type="PackedScene" uid="uid://doqsgsvd3lpa2" path="res://ui/button_small.tscn" id="3_38w81"]
-[ext_resource type="Texture2D" uid="uid://cbjiccv4nde5x" path="res://graphics/ui/8px/simple/x.png" id="4_anvqf"]
+[ext_resource type="Texture2D" uid="uid://deg4gonuf6bnk" path="res://graphics/ui/8px/simple/check.png" id="4_u83ly"]
 [ext_resource type="AudioStream" uid="uid://c6yn55me6x205" path="res://audio/click.wav" id="5_yg5o6"]
+[ext_resource type="Texture2D" uid="uid://hwwgsbveqcxg" path="res://graphics/ui/8px/simple/reset.png" id="6_qq28p"]
 
 [node name="SearchFilter" type="Control"]
 clip_contents = true
@@ -15,52 +16,137 @@ offset_left = -64.0
 offset_right = 114.0
 offset_bottom = 113.0
 theme = ExtResource("1_u83ly")
-script = ExtResource("2_qq28p")
+script = ExtResource("2_v1k2n")
 
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 0
 offset_right = 178.0
 offset_bottom = 113.0
 
-[node name="CloseButton" parent="Panel" instance=ExtResource("3_38w81")]
+[node name="Apply" parent="Panel" instance=ExtResource("3_38w81")]
 unique_name_in_owner = true
 layout_mode = 0
-offset_left = 158.0
-offset_top = 4.0
-offset_right = 174.5
-offset_bottom = 20.0
-icon_texture = ExtResource("4_anvqf")
+offset_left = 152.0
+offset_top = 88.0
+offset_right = 168.5
+offset_bottom = 104.0
+icon_texture = ExtResource("4_u83ly")
 click_sound = ExtResource("5_yg5o6")
 
-[node name="Header" type="Label" parent="Panel"]
+[node name="Reset" parent="Panel" instance=ExtResource("3_38w81")]
+unique_name_in_owner = true
 layout_mode = 0
-offset_left = 62.0
-offset_top = 10.0
-offset_right = 114.0
-offset_bottom = 17.0
-text = "search maps"
+offset_left = 128.0
+offset_top = 88.0
+offset_right = 144.5
+offset_bottom = 104.0
+icon_texture = ExtResource("6_qq28p")
+click_sound = ExtResource("5_yg5o6")
 
 [node name="Search" type="LineEdit" parent="Panel"]
 layout_mode = 0
 offset_left = 10.0
-offset_top = 27.0
-offset_right = 164.0
-offset_bottom = 34.0
+offset_top = 21.0
+offset_right = 167.0
+offset_bottom = 28.0
 placeholder_text = "search"
 alignment = 1
 
-[node name="IsCreator" type="CheckButton" parent="Panel"]
+[node name="IsRanked" type="CheckButton" parent="Panel"]
 layout_mode = 0
-offset_left = 15.0
-offset_top = 52.0
-offset_right = 66.0
-offset_bottom = 68.0
-text = "creator"
+offset_left = 10.0
+offset_top = 49.0
+offset_right = 89.0
+offset_bottom = 65.0
+text = "only ranked"
+alignment = 1
+icon_alignment = 1
+vertical_icon_alignment = 0
 
 [node name="IsLoved" type="CheckButton" parent="Panel"]
 layout_mode = 0
-offset_left = 15.0
-offset_top = 39.0
-offset_right = 76.0
-offset_bottom = 55.0
+offset_left = 10.0
+offset_top = 61.0
+offset_right = 89.0
+offset_bottom = 77.0
 text = "only loved"
+alignment = 1
+icon_alignment = 1
+vertical_icon_alignment = 0
+
+[node name="SearchBy" type="OptionButton" parent="Panel"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 34.0
+offset_right = 86.0
+offset_bottom = 41.0
+selected = 0
+item_count = 3
+popup/item_0/text = "title"
+popup/item_0/id = 1
+popup/item_1/text = "creator"
+popup/item_1/id = 3
+popup/item_2/text = "id"
+popup/item_2/id = 3
+
+[node name="OrderBy" type="OptionButton" parent="Panel"]
+layout_mode = 0
+offset_left = 98.0
+offset_top = 34.0
+offset_right = 166.0
+offset_bottom = 41.0
+selected = 0
+item_count = 4
+popup/item_0/text = "newest"
+popup/item_0/id = 0
+popup/item_1/text = "play"
+popup/item_1/id = 1
+popup/item_2/text = "loved"
+popup/item_2/id = 3
+popup/item_3/text = "rating"
+popup/item_3/id = 2
+
+[node name="RatingMin" type="HSlider" parent="Panel"]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 80.0
+offset_right = 88.0
+offset_bottom = 88.0
+min_value = 1.0
+max_value = 11.0
+step = 0.5
+value = 1.0
+tick_count = 10
+ticks_on_borders = true
+ticks_position = 3
+
+[node name="RatingMax" type="HSlider" parent="Panel"]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 88.0
+offset_right = 88.0
+offset_bottom = 96.0
+min_value = 1.0
+max_value = 11.0
+step = 0.5
+value = 11.0
+allow_greater = true
+tick_count = 11
+ticks_on_borders = true
+ticks_position = 3
+
+[node name="Rating" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 20.0
+offset_top = 98.0
+offset_right = 78.0
+offset_bottom = 105.0
+text = "rating: 1.0 ~ inf"
+
+[node name="Label" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 8.0
+offset_right = 63.0
+offset_bottom = 15.0
+text = "filter maps"
