@@ -1,4 +1,4 @@
-﻿class_name SlidePopup
+class_name SlidePopup
 extends Control
 
 @export var dim_path: NodePath

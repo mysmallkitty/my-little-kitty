@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://cch35x3210bth"]
+[gd_scene load_steps=10 format=3 uid="uid://cch35x3210bth"]
 
 [ext_resource type="Script" uid="uid://dojna2fa0e63x" path="res://scripts/map/map_world.gd" id="1_world"]
 [ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="2_iw7op"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" uid="uid://brhd4il8y0v1l" path="res://scripts/map/map_preview.gd" id="5_preview"]
 [ext_resource type="Texture2D" uid="uid://b4v5ol2j3hr8o" path="res://graphics/ui/8px/death.png" id="6_0ryqv"]
 [ext_resource type="Texture2D" uid="uid://c0kfoeksewc0g" path="res://graphics/backgrounds/mountain.png" id="6_bgtex"]
+[ext_resource type="Texture2D" uid="uid://b5sd6kgftyqf3" path="res://graphics/kitty.png" id="7_su00s"]
 [ext_resource type="FontFile" uid="uid://753w5iciopwn" path="res://graphics/Galmuri7.ttf" id="8_e72yv"]
 
 [node name="MapPlay" type="Node2D"]
@@ -24,6 +25,17 @@ texture = ExtResource("6_bgtex")
 script = ExtResource("5_preview")
 
 [node name="UI" type="CanvasLayer" parent="."]
+
+[node name="ChatEffects" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 320.0
+offset_bottom = 180.0
+
+[node name="Haha" type="Control" parent="UI/ChatEffects"]
+anchors_preset = 0
+offset_right = 320.0
+offset_bottom = 180.0
 
 [node name="Hud" type="Control" parent="UI"]
 clip_contents = true
@@ -61,6 +73,21 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 color = Color(0, 0, 0, 0)
+
+[node name="ClearParticle" type="CPUParticles2D" parent="UI"]
+position = Vector2(163, -8)
+emitting = false
+amount = 100
+texture = ExtResource("7_su00s")
+lifetime = 3.0
+one_shot = true
+explosiveness = 0.15
+emission_shape = 3
+emission_rect_extents = Vector2(380, 0)
+spread = 0.0
+gravity = Vector2(0, 300)
+angular_velocity_min = -8.28
+angular_velocity_max = 201.38
 
 [node name="DeathFade" type="ColorRect" parent="UI"]
 anchors_preset = 15

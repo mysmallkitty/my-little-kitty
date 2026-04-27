@@ -1,0 +1,88 @@
+[gd_scene load_steps=12 format=3 uid="uid://4k4nwwndp57"]
+
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_fdc1f"]
+[ext_resource type="Texture2D" uid="uid://bqhj6lwfd8to0" path="res://graphics/loading.png" id="1_yy01m"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1p1ka"]
+atlas = ExtResource("1_yy01m")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e6tgx"]
+atlas = ExtResource("1_yy01m")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v1fkn"]
+atlas = ExtResource("1_yy01m")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ejoau"]
+atlas = ExtResource("1_yy01m")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jgkts"]
+atlas = ExtResource("1_yy01m")
+region = Rect2(64, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ovwq1"]
+atlas = ExtResource("1_yy01m")
+region = Rect2(80, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_48ly8"]
+atlas = ExtResource("1_yy01m")
+region = Rect2(96, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bbbuu"]
+atlas = ExtResource("1_yy01m")
+region = Rect2(112, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_nc8gw"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1p1ka")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e6tgx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v1fkn")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ejoau")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jgkts")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ovwq1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_48ly8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bbbuu")
+}],
+"loop": true,
+"name": &"default",
+"speed": 24.0
+}]
+
+[node name="Loading" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme = ExtResource("1_fdc1f")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(20, 14)
+sprite_frames = SubResource("SpriteFrames_nc8gw")
+frame_progress = 0.57555056
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 27.0
+offset_right = 35.0
+offset_bottom = 34.0
+text = "loading"

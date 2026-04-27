@@ -36,15 +36,95 @@ var _profile_texture_cache: Dictionary = {}
 var _profile_palette: Array = []
 var _player_texture_cache: Dictionary = {}
 var _player_palette: Array = []
+var _button_sfx_player: AudioStreamPlayer
+var _button_sfx_connected: Dictionary = {}
+var _click_sfx_connected: Dictionary = {}
 
 func _ready() -> void:
 	_ensure_audio_layout()
 	_load_settings()
 	_apply_audio()
+	_setup_button_sfx()
 	Engine.max_physics_steps_per_frame = 1
 	Engine.max_fps = 60
 	_profile_palette = Palatte.new().colors_64
 	_player_palette = _build_player_palette()
+
+func _setup_button_sfx() -> void:
+	if _button_sfx_player == null:
+		_button_sfx_player = AudioStreamPlayer.new()
+		_button_sfx_player.bus = "sfx"
+		_button_sfx_player.stream = load("res://audio/click.wav")
+		_button_sfx_player.process_mode = Node.PROCESS_MODE_ALWAYS
+		add_child(_button_sfx_player)
+	var tree := get_tree()
+	if tree == null:
+		return
+	if not tree.node_added.is_connected(_on_node_added):
+		tree.node_added.connect(_on_node_added)
+	_connect_buttons_recursive(tree.root)
+
+func _on_node_added(node: Node) -> void:
+	_register_button(node as BaseButton)
+	_register_clickable_control(node as Control)
+
+func _connect_buttons_recursive(node: Node) -> void:
+	if node == null:
+		return
+	_register_button(node as BaseButton)
+	_register_clickable_control(node as Control)
+	for child in node.get_children():
+		if child is Node:
+			_connect_buttons_recursive(child)
+
+func _register_button(button: BaseButton) -> void:
+	if button == null:
+		return
+	if button is IconButton:
+		return
+	var id := button.get_instance_id()
+	if _button_sfx_connected.has(id):
+		return
+	_button_sfx_connected[id] = true
+	button.pressed.connect(_on_any_button_pressed, CONNECT_DEFERRED)
+	button.tree_exited.connect(_on_button_exited.bind(id), CONNECT_DEFERRED)
+
+func _register_clickable_control(control: Control) -> void:
+	if control == null:
+		return
+	if control is BaseButton:
+		return
+	if control.mouse_filter != Control.MOUSE_FILTER_STOP:
+		return
+	if control.has_meta("no_click_sfx"):
+		return
+	var id := control.get_instance_id()
+	if _click_sfx_connected.has(id):
+		return
+	_click_sfx_connected[id] = true
+	control.gui_input.connect(_on_clickable_gui_input, CONNECT_DEFERRED)
+	control.tree_exited.connect(_on_clickable_exited.bind(id), CONNECT_DEFERRED)
+
+func _on_clickable_exited(id: int) -> void:
+	_click_sfx_connected.erase(id)
+
+func _on_button_exited(id: int) -> void:
+	_button_sfx_connected.erase(id)
+
+func _on_any_button_pressed() -> void:
+	_play_click_sfx()
+
+func _on_clickable_gui_input(event: InputEvent) -> void:
+	var mb := event as InputEventMouseButton
+	if mb == null:
+		return
+	if mb.button_index == MOUSE_BUTTON_LEFT and mb.pressed:
+		_play_click_sfx()
+
+func _play_click_sfx() -> void:
+	if _button_sfx_player == null:
+		return
+	_button_sfx_player.play()
 
 func get_tick_dt() -> float:
 	var ticks := int(Engine.physics_ticks_per_second)

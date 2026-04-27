@@ -12,8 +12,10 @@ extends SlidePopup
 @onready var _bgm_slider: HSlider = $Panel/Volume/BGM
 
 @onready var _key_buttons := {
-	"player_left": $Panel/Input/LEFT as KeyButton,
-	"player_right": $Panel/Input/RIGHT as KeyButton,
+	"ui_left": $Panel/Input/LEFT as KeyButton,
+	"ui_right": $Panel/Input/RIGHT as KeyButton,
+	"ui_up": $Panel/Input/UP as KeyButton,
+	"ui_down": $Panel/Input/DOWN as KeyButton,
 	"player_jump": $Panel/Input/JUMP as KeyButton,
 	"player_dash": $Panel/Input/DASH as KeyButton,
 	"key_reload": $Panel/Input/RESTART as KeyButton,
@@ -155,6 +157,10 @@ func _load_settings() -> void:
 	_saved_bindings.clear()
 	var cfg := ConfigFile.new()
 	var err := cfg.load(config_path)
+	var legacy_map := {
+		"ui_left": "player_left",
+		"ui_right": "player_right",
+	}
 	_saved_volume = {
 		"master": _get_game_volume("master"),
 		"sfx": _get_game_volume("sfx"),
@@ -174,6 +180,10 @@ func _load_settings() -> void:
 		var code := 0
 		if err == OK and cfg.has_section_key("input", action):
 			code = int(cfg.get_value("input", action))
+		elif err == OK and legacy_map.has(action):
+			var legacy_action := str(legacy_map[action])
+			if cfg.has_section_key("input", legacy_action):
+				code = int(cfg.get_value("input", legacy_action))
 		if code == 0:
 			code = _get_action_keycode(action)
 		_saved_bindings[action] = code

@@ -168,7 +168,7 @@ func _physics_process(delta):
 
 	var dt := _get_tick_dt(delta)
 
-	var input_dir := Input.get_action_strength("player_right") - Input.get_action_strength("player_left")
+	var input_dir := Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
 	if input_dir < 0.0:
 		dir_look = -1.0
 	elif input_dir > 0.0:
@@ -202,7 +202,7 @@ func _handle_timers(delta: float) -> void:
 		_on_floor_timer = max(0.0, _on_floor_timer - delta)
 	
 	if is_on_wall():
-		var dir = Input.get_action_strength("player_right") - Input.get_action_strength("player_left")
+		var dir = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
 		if abs(dir) > 0:
 			pass
 
@@ -233,7 +233,7 @@ func complete_map() -> void:
 func _air_ground_step(delta: float) -> void:
 	_vel.y -= gravity * delta * up_direction.y
 
-	var dir := Input.get_action_strength("player_right") - Input.get_action_strength("player_left")
+	var dir := Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
 	var target_x := move_speed * dir
 
 	if is_on_floor():
@@ -283,7 +283,7 @@ func _jump(is_air_jump: bool) -> void:
 		_air_jump_chain = min(_air_jump_chain + 1, air_jump_pitch_max_count)
 	else:
 		_air_jump_chain = 0
-	if _post_dash_jump_timer > 0.0 && (Input.get_action_strength("player_right") - Input.get_action_strength("player_left") != 0): # do hyper jump
+	if _post_dash_jump_timer > 0.0 && (Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left") != 0): # do hyper jump
 		_post_dash_jump_timer = 0.0
 		var boosted_x := (dash_speed * dash_jump_boost_mult) + dash_jump_boost_add
 		_vel.x = boosted_x * _post_dash_dir

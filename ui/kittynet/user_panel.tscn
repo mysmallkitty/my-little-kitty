@@ -1,12 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://cak20fbe3l4fn"]
+[gd_scene load_steps=5 format=3 uid="uid://cak20fbe3l4fn"]
 
 [ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_glejw"]
 [ext_resource type="Texture2D" uid="uid://dorhn8p2leq2t" path="res://graphics/ui/panels/user_panel.png" id="1_ureww"]
-[ext_resource type="Texture2D" uid="uid://cdb1r6yfycofa" path="res://graphics/ui/16px/user_guest.png" id="2_glejw"]
+[ext_resource type="Texture2D" uid="uid://c437bfd814cs6" path="res://graphics/ui/16px/user_signed.png" id="3_04755"]
 [ext_resource type="Texture2D" uid="uid://b2odneysof1e2" path="res://graphics/ui/8px/ranks/1.png" id="3_ecv81"]
-[ext_resource type="PackedScene" uid="uid://doqsgsvd3lpa2" path="res://ui/button_small.tscn" id="5_qpt7k"]
-[ext_resource type="AudioStream" uid="uid://c6yn55me6x205" path="res://audio/click.wav" id="6_04755"]
-[ext_resource type="Texture2D" uid="uid://cvsm2biosg2mh" path="res://graphics/ui/8px/simple/user.png" id="6_qjabm"]
 
 [node name="UserPanel" type="TextureRect"]
 theme = ExtResource("1_glejw")
@@ -18,7 +15,7 @@ offset_left = 1.0
 offset_top = 1.0
 offset_right = 17.0
 offset_bottom = 17.0
-texture = ExtResource("2_glejw")
+texture = ExtResource("3_04755")
 
 [node name="Row" type="HBoxContainer" parent="."]
 layout_mode = 0
@@ -44,21 +41,11 @@ offset_bottom = 16.0
 text = "#--"
 
 [node name="IsOnline" type="Label" parent="."]
-visible = false
 self_modulate = Color(0.56770843, 0.9999998, 0.22513646, 1)
 layout_mode = 0
-offset_left = 69.0
+offset_left = 86.0
 offset_top = 10.0
-offset_right = 103.0
+offset_right = 120.0
 offset_bottom = 17.0
 text = "online"
 horizontal_alignment = 2
-
-[node name="TextureButton" parent="." instance=ExtResource("5_qpt7k")]
-layout_mode = 0
-offset_left = 104.0
-offset_top = 1.0
-offset_right = 120.0
-offset_bottom = 17.0
-icon_texture = ExtResource("6_qjabm")
-click_sound = ExtResource("6_04755")

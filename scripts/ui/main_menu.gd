@@ -7,10 +7,14 @@ extends Node2D
 var play_button: BaseButton
 var editor_button: BaseButton
 var settings_button: BaseButton
+var kittynet_button: BaseButton
 var profile_panel: Control
 var auth_panel: Control
 var profile_detail: Control
 var settings_panel: SettingsPanel
+var kittynet_panel: Kittynet
+var _death_label: Label
+var _death_timer: Timer
 
 func _ready() -> void:
 	Game.ensure_dirs()
@@ -18,6 +22,7 @@ func _ready() -> void:
 	_connect_buttons()
 	_setup_profile_click()
 	_setup_settings_panel()
+	_setup_death_counter()
 	if auth_panel != null:
 		auth_panel.visible = false
 	if Game.should_force_tutorial():
@@ -34,6 +39,8 @@ func _connect_buttons() -> void:
 		editor_button.pressed.connect(_on_editor_pressed)
 	if settings_button != null and not settings_button.pressed.is_connected(_on_settings_pressed):
 		settings_button.pressed.connect(_on_settings_pressed)
+	if kittynet_button != null and not kittynet_button.pressed.is_connected(_on_kittynet_pressed):
+		kittynet_button.pressed.connect(_on_kittynet_pressed)
 
 func _setup_profile_click() -> void:
 	if profile_panel == null:
@@ -64,6 +71,20 @@ func _on_settings_pressed() -> void:
 		settings_panel.close()
 	else:
 		settings_panel.open()
+
+func _on_kittynet_pressed() -> void:
+	if kittynet_panel == null:
+		return
+	if kittynet_panel.has_method("is_open") and kittynet_panel.is_open():
+		if kittynet_panel.has_method("close_popup"):
+			kittynet_panel.close_popup()
+		else:
+			kittynet_panel.hide()
+		return
+	if kittynet_panel.has_method("open_popup"):
+		kittynet_panel.open_popup()
+	else:
+		kittynet_panel.visible = true
 
 func _open_auth_panel() -> void:
 	if auth_panel == null:
@@ -98,9 +119,44 @@ func _bind_ui() -> void:
 	play_button = _find_button("UI/Hud/Buttons/Play", "Play")
 	editor_button = _find_button("UI/Hud/Buttons/Editor", "Editor")
 	settings_button = _find_button("UI/Hud/Buttons/Settings", "Settings")
+	kittynet_button = _find_button("UI/Hud/Buttons/KittynetOpen", "KittynetOpen")
 	profile_panel = get_node_or_null("UI/ProfilePanel") as Control
 	auth_panel = get_node_or_null("UI/AuthPanel") as Control
 	profile_detail = get_node_or_null("UI/UserProfileDetail") as Control
+	kittynet_panel = get_node_or_null("UI/Kittynet") as Kittynet
+	_death_label = get_node_or_null("UI/Hud/TodaysDeathCount") as Label
+	if kittynet_panel != null:
+		kittynet_panel.hide()
+
+func _setup_death_counter() -> void:
+	if _death_label == null:
+		return
+	_death_label.visible = true
+	_update_death_label(0)
+	call_deferred("_fetch_recent_deaths")
+	if _death_timer == null:
+		_death_timer = Timer.new()
+		_death_timer.one_shot = false
+		_death_timer.wait_time = 10.0
+		add_child(_death_timer)
+		_death_timer.timeout.connect(_fetch_recent_deaths)
+	_death_timer.start()
+
+func _fetch_recent_deaths() -> void:
+	var result: Dictionary = await ApiClient.GET("/api/v1/records/global-deaths")
+	if not result.get("ok", false):
+		return
+	var data = result.get("data", null)
+	if typeof(data) != TYPE_DICTIONARY:
+		return
+	var count := int(data.get("recent_24h_deaths", 0))
+	_update_death_label(count)
+
+func _update_death_label(count: int) -> void:
+	if _death_label == null:
+		return
+	var label_text := "In last 24 hours\n%d kitties crossed the Rainbow Bridge." % count
+	_death_label.text = label_text
 
 func _setup_settings_panel() -> void:
 	settings_panel = get_node_or_null("UI/SettingsPanel") as SettingsPanel

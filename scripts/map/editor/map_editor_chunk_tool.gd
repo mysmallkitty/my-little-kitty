@@ -5,10 +5,15 @@ var editor
 
 var dragging_chunk := false
 var drag_start_tile := Vector2i.ZERO
+var drag_prev_tile := Vector2i.ZERO
 var drag_chunk_origin := Vector2i.ZERO
 var drag_chunk_size := Vector2i.ZERO
 var resizing_chunk := false
 var resize_handle := ""
+var _resize_limit_left := -1000000
+var _resize_limit_right := 1000000
+var _resize_limit_top := -1000000
+var _resize_limit_bottom := 1000000
 
 func setup(editor_ref) -> void:
 	editor = editor_ref
@@ -65,6 +70,7 @@ func handle_mouse_button(event: InputEventMouseButton) -> void:
 			drag_start_tile = editor._get_mouse_tile()
 			drag_chunk_origin = handle_chunk.pos
 			drag_chunk_size = handle_chunk.size
+			_compute_resize_limits()
 			editor._record_undo()
 			update_ui()
 			return
@@ -74,6 +80,7 @@ func handle_mouse_button(event: InputEventMouseButton) -> void:
 			editor.selected_chunk = chunk
 			dragging_chunk = true
 			drag_start_tile = tile_pos
+			drag_prev_tile = tile_pos
 			drag_chunk_origin = chunk.pos
 			drag_chunk_size = chunk.size
 			editor._record_undo()
@@ -138,11 +145,27 @@ func delete_selected_chunk() -> void:
 
 func _drag_chunk() -> void:
 	var tile_pos = editor._get_mouse_tile()
-	var delta = tile_pos - drag_start_tile
+	var delta = tile_pos - drag_prev_tile
+	if delta == Vector2i.ZERO:
+		return
 	if editor.selected_chunk != null:
-		var new_pos = drag_chunk_origin + delta
-		if not _chunk_overlaps(new_pos, editor.selected_chunk.size, editor.selected_chunk):
-			editor.selected_chunk.pos = new_pos
+		var size = editor.selected_chunk.size
+		var pos = editor.selected_chunk.pos
+		var step_x := int(sign(delta.x))
+		for _i in range(abs(delta.x)):
+			var try_pos = pos + Vector2i(step_x, 0)
+			if _chunk_overlaps(try_pos, size, editor.selected_chunk):
+				break
+			pos = try_pos
+		var step_y := int(sign(delta.y))
+		for _i in range(abs(delta.y)):
+			var try_pos = pos + Vector2i(0, step_y)
+			if _chunk_overlaps(try_pos, size, editor.selected_chunk):
+				break
+			pos = try_pos
+		if pos != editor.selected_chunk.pos:
+			editor.selected_chunk.pos = pos
+	drag_prev_tile = tile_pos
 
 func _resize_chunk() -> void:
 	if editor.selected_chunk == null or editor.map_data == null:
@@ -153,59 +176,64 @@ func _resize_chunk() -> void:
 	var right = drag_chunk_origin.x + drag_chunk_size.x
 	var top = drag_chunk_origin.y
 	var bottom = drag_chunk_origin.y + drag_chunk_size.y
+	var limit_left := _resize_limit_left
+	var limit_right := _resize_limit_right
+	var limit_top := _resize_limit_top
+	var limit_bottom := _resize_limit_bottom
+	if limit_left > right - min_size.x:
+		limit_left = right - min_size.x
+	if limit_right < left + min_size.x:
+		limit_right = left + min_size.x
+	if limit_top > bottom - min_size.y:
+		limit_top = bottom - min_size.y
+	if limit_bottom < top + min_size.y:
+		limit_bottom = top + min_size.y
 	match resize_handle:
 		"left":
-			var new_left: int = int(min(right - min_size.x, tile_pos.x))
-			var limit_left := -1000000
-			for other in editor.map_data.chunks:
-				if other == editor.selected_chunk:
-					continue
-				if _ranges_overlap(top, bottom, other.pos.y, other.pos.y + other.size.y):
-					limit_left = max(limit_left, other.pos.x + other.size.x)
-			if limit_left > -1000000:
-				new_left = max(new_left, limit_left)
-			new_left = min(new_left, right - min_size.x)
+			var new_left: int = int(clampi(tile_pos.x, limit_left, right - min_size.x))
 			editor.selected_chunk.pos.x = new_left
 			editor.selected_chunk.size.x = right - new_left
 		"right":
-			var new_right: int = int(max(left + min_size.x, tile_pos.x + 1))
-			var limit_right := 1000000
-			for other in editor.map_data.chunks:
-				if other == editor.selected_chunk:
-					continue
-				if _ranges_overlap(top, bottom, other.pos.y, other.pos.y + other.size.y):
-					limit_right = min(limit_right, other.pos.x)
-			if limit_right < 1000000:
-				new_right = min(new_right, limit_right)
-			new_right = max(new_right, left + min_size.x)
+			var new_right: int = int(clampi(tile_pos.x + 1, left + min_size.x, limit_right))
 			editor.selected_chunk.pos.x = left
 			editor.selected_chunk.size.x = new_right - left
 		"top":
-			var new_top: int = int(min(bottom - min_size.y, tile_pos.y))
-			var limit_top := -1000000
-			for other in editor.map_data.chunks:
-				if other == editor.selected_chunk:
-					continue
-				if _ranges_overlap(left, right, other.pos.x, other.pos.x + other.size.x):
-					limit_top = max(limit_top, other.pos.y + other.size.y)
-			if limit_top > -1000000:
-				new_top = max(new_top, limit_top)
-			new_top = min(new_top, bottom - min_size.y)
+			var new_top: int = int(clampi(tile_pos.y, limit_top, bottom - min_size.y))
 			editor.selected_chunk.pos.y = new_top
 			editor.selected_chunk.size.y = bottom - new_top
 		"bottom":
-			var new_bottom: int = int(max(top + min_size.y, tile_pos.y + 1))
-			var limit_bottom := 1000000
-			for other in editor.map_data.chunks:
-				if other == editor.selected_chunk:
-					continue
-				if _ranges_overlap(left, right, other.pos.x, other.pos.x + other.size.x):
-					limit_bottom = min(limit_bottom, other.pos.y)
-			if limit_bottom < 1000000:
-				new_bottom = min(new_bottom, limit_bottom)
-			new_bottom = max(new_bottom, top + min_size.y)
+			var new_bottom: int = int(clampi(tile_pos.y + 1, top + min_size.y, limit_bottom))
 			editor.selected_chunk.pos.y = top
 			editor.selected_chunk.size.y = new_bottom - top
+
+func _compute_resize_limits() -> void:
+	_resize_limit_left = -1000000
+	_resize_limit_right = 1000000
+	_resize_limit_top = -1000000
+	_resize_limit_bottom = 1000000
+	if editor.map_data == null or editor.selected_chunk == null:
+		return
+	var left = drag_chunk_origin.x
+	var right = drag_chunk_origin.x + drag_chunk_size.x
+	var top = drag_chunk_origin.y
+	var bottom = drag_chunk_origin.y + drag_chunk_size.y
+	for other in editor.map_data.chunks:
+		if other == editor.selected_chunk:
+			continue
+		var other_left = other.pos.x
+		var other_right = other.pos.x + other.size.x
+		var other_top = other.pos.y
+		var other_bottom = other.pos.y + other.size.y
+		if _ranges_overlap(top, bottom, other_top, other_bottom):
+			if other_right <= right:
+				_resize_limit_left = max(_resize_limit_left, other_right)
+			if other_left >= right:
+				_resize_limit_right = min(_resize_limit_right, other_left)
+		if _ranges_overlap(left, right, other_left, other_right):
+			if other_bottom <= bottom:
+				_resize_limit_top = max(_resize_limit_top, other_bottom)
+			if other_top >= bottom:
+				_resize_limit_bottom = min(_resize_limit_bottom, other_top)
 
 func _get_chunk_handle_at_pos(chunk: ChunkData, world_pos: Vector2) -> String:
 	var rect = _chunk_rect_pixels(chunk)
@@ -231,14 +259,19 @@ func _chunk_rect_pixels(chunk: ChunkData) -> Rect2:
 func _chunk_overlaps(pos: Vector2i, size: Vector2i, ignore: ChunkData) -> bool:
 	if editor.map_data == null:
 		return false
-	var rect := Rect2i(pos, size)
 	for other in editor.map_data.chunks:
 		if other == ignore:
 			continue
-		var other_rect := Rect2i(other.pos, other.size)
-		if rect.intersects(other_rect):
+		if _rects_overlap_strict(pos, size, other.pos, other.size):
 			return true
 	return false
+
+func _rects_overlap_strict(a_pos: Vector2i, a_size: Vector2i, b_pos: Vector2i, b_size: Vector2i) -> bool:
+	var a_right = a_pos.x + a_size.x
+	var b_right = b_pos.x + b_size.x
+	var a_bottom = a_pos.y + a_size.y
+	var b_bottom = b_pos.y + b_size.y
+	return a_pos.x < b_right and b_pos.x < a_right and a_pos.y < b_bottom and b_pos.y < a_bottom
 
 func _ranges_overlap(a_min: int, a_max: int, b_min: int, b_max: int) -> bool:
 	return a_min < b_max and b_min < a_max

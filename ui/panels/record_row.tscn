@@ -1,22 +1,23 @@
-[gd_scene load_steps=5 format=3 uid="uid://bieb7jdjy37ny"]
+[gd_scene load_steps=8 format=3 uid="uid://bieb7jdjy37ny"]
 
 [ext_resource type="Texture2D" uid="uid://d2wriqw1jmmo2" path="res://graphics/ui/profile_panel_no_detail.png" id="1_31k21"]
 [ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_bwb54"]
 [ext_resource type="Texture2D" uid="uid://c437bfd814cs6" path="res://graphics/ui/16px/user_signed.png" id="2_ic2gl"]
 [ext_resource type="Texture2D" uid="uid://b4v5ol2j3hr8o" path="res://graphics/ui/8px/death.png" id="4_gghp0"]
+[ext_resource type="PackedScene" uid="uid://doqsgsvd3lpa2" path="res://ui/button_small.tscn" id="5_p3gi3"]
+[ext_resource type="AudioStream" uid="uid://c6yn55me6x205" path="res://audio/click.wav" id="6_6ojxc"]
+[ext_resource type="Texture2D" uid="uid://ddb52dnxy51x2" path="res://graphics/ui/8px/replay.png" id="6_qr1ax"]
 
 [node name="RecordRow" type="Control"]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 112.0
-offset_bottom = 21.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_bottom = 18.0
 theme = ExtResource("1_bwb54")
 
 [node name="Panel" type="TextureRect" parent="."]
 layout_mode = 0
-offset_right = 112.0
+offset_right = 136.0
 offset_bottom = 18.0
 texture = ExtResource("1_31k21")
 stretch_mode = 2
@@ -61,3 +62,12 @@ text = "0"
 [node name="PP" type="Label" parent="Panel/HBoxContainer"]
 layout_mode = 2
 text = "200pp"
+
+[node name="Replay" parent="." instance=ExtResource("5_p3gi3")]
+layout_mode = 0
+offset_left = 116.0
+offset_top = 1.0
+offset_right = 132.0
+offset_bottom = 17.0
+icon_texture = ExtResource("6_qr1ax")
+click_sound = ExtResource("6_6ojxc")

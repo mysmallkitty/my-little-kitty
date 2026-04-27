@@ -548,6 +548,7 @@ func _update_stats_panel() -> void:
 	var best := "--:--"
 	var tries := 0
 	var deaths := 0
+	var pp := 0
 	if _selected_index >= 0 and _selected_index < _items.size():
 		var entry: Dictionary = _items[_selected_index].data
 		var raw_best = entry.get("best_time", null)
@@ -555,7 +556,8 @@ func _update_stats_panel() -> void:
 			best = Game._format_ticks(int(raw_best))
 		tries = int(entry.get("user_attempts", entry.get("total_attempts", 0)))
 		deaths = int(entry.get("user_deaths", entry.get("total_deaths", 0)))
-	stats_panel.set_stats(tries, deaths, best)
+		pp = int(entry.get("pp", entry.get("best_pp", entry.get("user_pp", 0))))
+	stats_panel.set_stats(tries, deaths, best, pp)
 
 func _on_title_changed(new_text: String) -> void:
 	_apply_title_change(new_text)

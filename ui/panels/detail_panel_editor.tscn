@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://c3qaqw6c26p23"]
+[gd_scene format=3 uid="uid://c3qaqw6c26p23"]
 
 [ext_resource type="Script" uid="uid://6wjxjgvwb8w6" path="res://scripts/map/select/panels/map_select_detail_editor.gd" id="1_detail_editor_script"]
 [ext_resource type="PackedScene" uid="uid://uhe6twg0cfbr" path="res://ui/difficulty_icon.tscn" id="2_4axvd"]
@@ -12,7 +12,7 @@
 [ext_resource type="PackedScene" uid="uid://dli2pb8ippthn" path="res://ui/button_big.tscn" id="13_mgvde"]
 [ext_resource type="Texture2D" uid="uid://c3j1ean530x1r" path="res://graphics/ui/16px/play.png" id="14_w36ic"]
 
-[node name="DetailPanel" type="Control"]
+[node name="DetailPanel" type="Control" unique_id=1657099456]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 144.0
@@ -20,21 +20,21 @@ offset_bottom = 76.0
 theme = ExtResource("3_aumbu")
 script = ExtResource("1_detail_editor_script")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="Panel" type="Panel" parent="." unique_id=817703113]
 self_modulate = Color(1, 1, 1, 0.78431374)
 texture_filter = 1
 layout_mode = 0
 offset_right = 144.0
 offset_bottom = 76.0
 
-[node name="DifficultyIcon" parent="Panel" instance=ExtResource("2_4axvd")]
+[node name="DifficultyIcon" parent="Panel" unique_id=1804263803 instance=ExtResource("2_4axvd")]
 layout_mode = 0
 offset_left = 5.0
 offset_top = 8.0
 offset_right = 21.0
 offset_bottom = 24.0
 
-[node name="Title" type="LineEdit" parent="Panel"]
+[node name="Title" type="LineEdit" parent="Panel" unique_id=1192327004]
 layout_mode = 0
 offset_left = 24.0
 offset_top = 10.0
@@ -44,7 +44,7 @@ theme = ExtResource("3_aumbu")
 placeholder_text = "world name"
 max_length = 20
 
-[node name="FileName" type="Label" parent="Panel"]
+[node name="FileName" type="Label" parent="Panel" unique_id=292366100]
 modulate = Color(0.5689727, 0.56897277, 0.5689727, 1)
 layout_mode = 0
 offset_left = 24.0
@@ -56,7 +56,7 @@ text = "0.json"
 vertical_alignment = 1
 clip_text = true
 
-[node name="PlayButton" parent="Panel" instance=ExtResource("13_mgvde")]
+[node name="PlayButton" parent="Panel" unique_id=698168791 instance=ExtResource("13_mgvde")]
 layout_mode = 1
 anchors_preset = 0
 anchor_left = 0.0
@@ -69,7 +69,7 @@ offset_right = 139.0
 offset_bottom = 72.0
 icon_texture = ExtResource("14_w36ic")
 
-[node name="EditButton" parent="Panel" instance=ExtResource("13_mgvde")]
+[node name="EditButton" parent="Panel" unique_id=1911664513 instance=ExtResource("13_mgvde")]
 layout_mode = 1
 anchors_preset = 0
 anchor_left = 0.0
@@ -82,7 +82,7 @@ offset_right = 112.0
 offset_bottom = 72.0
 icon_texture = ExtResource("9_vrpj3")
 
-[node name="DeleteMap" parent="Panel" instance=ExtResource("13_mgvde")]
+[node name="DeleteMap" parent="Panel" unique_id=735722546 instance=ExtResource("13_mgvde")]
 layout_mode = 1
 anchors_preset = 0
 anchor_left = 0.0
@@ -95,11 +95,11 @@ offset_right = 32.0
 offset_bottom = 72.0
 icon_texture = ExtResource("10_77xe4")
 
-[node name="Check" type="Sprite2D" parent="Panel"]
+[node name="Check" type="Sprite2D" parent="Panel" unique_id=241170067]
 position = Vector2(12, 35)
 texture = ExtResource("10_jxlfc")
 
-[node name="Verified" type="Label" parent="Panel"]
+[node name="Verified" type="Label" parent="Panel" unique_id=782200607]
 modulate = Color(0.5689727, 0.56897277, 0.5689727, 1)
 layout_mode = 0
 offset_left = 19.0
@@ -111,7 +111,7 @@ text = "unverified"
 vertical_alignment = 1
 clip_text = true
 
-[node name="UploadButton" parent="." instance=ExtResource("8_vrpj3")]
+[node name="UploadButton" parent="." unique_id=576369513 instance=ExtResource("8_vrpj3")]
 layout_mode = 0
 offset_left = 69.0
 offset_top = 56.0

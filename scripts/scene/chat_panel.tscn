@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=3 uid="uid://bjls75uug1iu3"]
+
+[ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_l6p4g"]
+[ext_resource type="Texture2D" uid="uid://c437bfd814cs6" path="res://graphics/ui/16px/user_signed.png" id="2_ngv20"]
+
+[node name="Chat" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1.0
+offset_bottom = 9.0
+theme = ExtResource("1_l6p4g")
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 16.0
+offset_bottom = 16.0
+texture = ExtResource("2_ngv20")
+
+[node name="username" type="Label" parent="."]
+layout_mode = 0
+offset_left = 17.0
+offset_right = 70.0
+offset_bottom = 7.0
+
+[node name="chat" type="Label" parent="."]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 8.0
+offset_right = 70.0
+offset_bottom = 15.0

@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://bxjannrn6h6fp"]
+[gd_scene load_steps=17 format=3 uid="uid://bxjannrn6h6fp"]
 
 [ext_resource type="Script" uid="uid://cbg2bw437a1jc" path="res://scripts/ui/main_menu.gd" id="1_main"]
 [ext_resource type="Texture2D" uid="uid://c0kfoeksewc0g" path="res://graphics/backgrounds/mountain.png" id="2_6q716"]
@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://doqsgsvd3lpa2" path="res://ui/button_small.tscn" id="11_g04ek"]
 [ext_resource type="AudioStream" uid="uid://c6yn55me6x205" path="res://audio/click.wav" id="13_hoggf"]
 [ext_resource type="PackedScene" uid="uid://wwa1oqiojlx3" path="res://ui/panels/settings_panel.tscn" id="15_qcouk"]
+[ext_resource type="PackedScene" uid="uid://b8llssoxm42cr" path="res://ui/kittynet/kittynet.tscn" id="16_7l0ea"]
 
 [node name="MainMenu" type="Node2D"]
 script = ExtResource("1_main")
@@ -49,6 +50,16 @@ offset_top = 34.0
 offset_right = 264.0
 offset_bottom = 105.0
 texture = ExtResource("2_logo")
+
+[node name="TodaysDeathCount" type="Label" parent="UI/Hud"]
+self_modulate = Color(0.5689727, 0.56897277, 0.5689727, 1)
+layout_mode = 0
+offset_left = 3.0
+offset_top = 161.0
+offset_right = 146.0
+offset_bottom = 178.0
+text = "0 kittiens crossed the Rainbow Bridge
+in last 24 hours"
 
 [node name="Buttons" type="Control" parent="UI/Hud"]
 unique_name_in_owner = true
@@ -103,7 +114,7 @@ offset_bottom = 49.0
 theme = ExtResource("5_theme")
 text = "quit"
 
-[node name="GlobalLeaderBoard" parent="UI/Hud/Buttons" instance=ExtResource("11_g04ek")]
+[node name="KittynetOpen" parent="UI/Hud/Buttons" instance=ExtResource("11_g04ek")]
 layout_mode = 0
 offset_left = 162.0
 offset_top = 46.0
@@ -158,4 +169,16 @@ offset_left = 81.0
 offset_top = 17.0
 offset_right = 81.0
 offset_bottom = 17.019997
+slide_dir = Vector2(0, 1)
+
+[node name="Kittynet" parent="UI" instance=ExtResource("16_7l0ea")]
+visible = false
+anchor_left = 0.041
+anchor_top = 0.05
+anchor_right = 0.97200006
+anchor_bottom = 1.0500001
+offset_left = -0.12000084
+offset_right = -0.040008545
+offset_bottom = -1.5258789e-05
+dim_path = NodePath("")
 slide_dir = Vector2(0, 1)

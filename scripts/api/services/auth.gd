@@ -41,8 +41,6 @@ static func me() -> Dictionary:
 	var res = await ApiClient.GET("/api/v1/user/me")
 	if res.get("ok", false) and typeof(res.get("data", null)) == TYPE_DICTIONARY:
 		ApiClient.me = res["data"]
-	else:
-		ApiClient.me = {}
 	return res
 
 static func logout() -> void:

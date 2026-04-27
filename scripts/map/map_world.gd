@@ -12,6 +12,8 @@ extends Node2D
 @export var death_fade_delay := 0.7
 
 var _checkpoint_pos
+var _checkpoint_up_dir := Vector2.UP
+var _checkpoint_scale_y := 1.0
 var accum_rate = 0.015
 var map_data: MapData
 var current_chunk: ChunkData
@@ -26,12 +28,15 @@ var pause_restart: BaseButton
 var pause_quit: BaseButton
 var pause_dim: ColorRect
 var death_fade: ColorRect
+var clear_dim: ColorRect
 var death_particles: Array[CPUParticles2D] = []
 var death_sfx: AudioStreamPlayer
 var clear_panel: Control
 var clear_death_label: Label
 var clear_time_label: Label
 var clear_button: BaseButton
+var clear_retry_button: BaseButton
+var _clear_panel_tween: Tween
 var ws: WsSession
 var ghosts: Dictionary = {}
 var _net_accum := 0.0
@@ -41,6 +46,7 @@ var _ghost_sprite_cache: Dictionary = {}
 var _chat_scene: PackedScene = preload("res://scripts/scene/chat.tscn")
 var _chat_line: LineEdit
 var _chat_open := false
+var _chat_sfx: AudioStreamPlayer
 @onready var _total_death_label := $UI/Hud/TotalDeath
 @onready var _clear_time_label := $UI/Hud/ClearTime
 
@@ -115,6 +121,8 @@ func _get_tick_dt(delta: float) -> float:
 	return delta
 
 func _unhandled_input(event: InputEvent) -> void:
+	if _map_cleared:
+		return
 	if _handle_chat_input(event):
 		return
 	if _chat_open:
@@ -193,6 +201,8 @@ func _spawn_player() -> void:
 		_cleartime = 0
 		_total_death = 0
 	else: player.global_position = _checkpoint_pos
+	if _has_checkpoint:
+		_apply_checkpoint_gravity()
 	if spawn_chunk != null:
 		_awaiting_first_step = false
 		_pending_chunk_id = spawn_chunk.id
@@ -260,14 +270,19 @@ func _setup_clear_panel() -> void:
 	clear_panel = (panel_scene as PackedScene).instantiate() as Control
 	if clear_panel == null:
 		return
+	clear_panel.process_mode = Node.PROCESS_MODE_ALWAYS
 	clear_panel.visible = false
 	ui_layer.add_child(clear_panel)
-	clear_panel.position = (get_viewport_rect().size - clear_panel.size) * 0.5
+	clear_panel.position = _get_clear_panel_center()
 	clear_death_label = clear_panel.get_node_or_null("Panel/TotalDeath") as Label
 	clear_time_label = clear_panel.get_node_or_null("Panel/ClearTime") as Label
 	clear_button = clear_panel.get_node_or_null("Panel/IconButton") as BaseButton
+	clear_retry_button = clear_panel.get_node_or_null("Panel/RetryButton") as BaseButton
 	if clear_button != null and not clear_button.pressed.is_connected(_on_clear_panel_continue):
 		clear_button.pressed.connect(_on_clear_panel_continue)
+	if clear_retry_button != null and not clear_retry_button.pressed.is_connected(_on_clear_panel_retry):
+		clear_retry_button.pressed.connect(_on_clear_panel_retry)
+	clear_dim = get_node_or_null("UI/Dim") as ColorRect
 
 
 
@@ -280,6 +295,11 @@ func _setup_chat_ui() -> void:
 	_chat_line.focus_mode = Control.FOCUS_ALL
 	if not _chat_line.text_submitted.is_connected(_on_chat_submit):
 		_chat_line.text_submitted.connect(_on_chat_submit)
+	if _chat_sfx == null:
+		_chat_sfx = AudioStreamPlayer.new()
+		_chat_sfx.bus = "sfx"
+		_chat_sfx.stream = load("res://audio/chat.wav")
+		add_child(_chat_sfx)
 
 func _handle_chat_input(event: InputEvent) -> bool:
 	if _chat_line == null:
@@ -323,6 +343,7 @@ func _send_chat_message() -> void:
 	if msg == "":
 		return
 	_add_chat_bubble(player, msg)
+	_play_chat_sfx()
 	if ws != null and ws.is_ready():
 		ws.send_chat(msg)
 	_close_chat()
@@ -344,9 +365,19 @@ func _add_chat_bubble(target: Node, text: String) -> void:
 		return
 	bubble.text = text
 	container.add_child(bubble)
-	while container.get_child_count() > 3:
-		var child := container.get_child(0)
-		child.queue_free()
+	var excess := container.get_child_count() - 3
+	if excess > 0:
+		for _i in range(excess):
+			if container.get_child_count() == 0:
+				break
+			var child := container.get_child(0)
+			container.remove_child(child)
+			child.queue_free()
+
+func _play_chat_sfx() -> void:
+	if _chat_sfx == null:
+		return
+	_chat_sfx.play()
 func _clear_chat_container(target: Node) -> void:
 	if target == null:
 		return
@@ -443,6 +474,8 @@ func _respawn() -> void:
 		return
 	pause_timer = true
 	_respawning = true
+	_awaiting_first_step = false
+	_pending_chunk_id = ""
 	_total_death += 1
 	_total_death_label.text = str(_total_death)
 	if ws != null and ws.is_ready():
@@ -461,12 +494,6 @@ func _respawn() -> void:
 		respawn_chunk = map_data.get_chunk_at_tile(tile_pos)
 	current_chunk = respawn_chunk
 	_replace_player()
-	if current_chunk == _get_start_chunk():
-		pass
-	else:
-		if respawn_chunk != null:
-			_awaiting_first_step = true
-			_pending_chunk_id = respawn_chunk.id
 	await _fade_death(0.0)
 	if player != null:
 		player.editor_mode = false
@@ -496,6 +523,8 @@ func _on_map_cleared() -> void:
 	if _map_cleared:
 		return
 	_map_cleared = true
+	_set_clear_overlay(true)
+	$UI/ClearParticle.emitting = true
 	if player != null:
 		player.editor_mode = true
 		player.velocity = Vector2.ZERO
@@ -509,7 +538,7 @@ func _on_map_cleared() -> void:
 	if ws != null and ws.is_ready():
 		ws.send_clear(_cleartime, _total_death)
 	if clear_panel != null:
-		clear_panel.visible = true
+		_play_clear_panel_anim()
 
 func _update_clear_panel() -> void:
 	if clear_death_label != null:
@@ -528,7 +557,63 @@ func _format_clear_time(frames: int) -> String:
 	return "%02d:%02d:%02d" % [minutes, seconds, frac]
 
 func _on_clear_panel_continue() -> void:
+	_set_clear_overlay(false)
 	_return_to_play_select()
+
+func _on_clear_panel_retry() -> void:
+	_set_clear_overlay(false)
+	_restart_after_clear()
+
+func _restart_after_clear() -> void:
+	_map_cleared = false
+	_has_checkpoint = false
+	_checkpoint_up_dir = Vector2.UP
+	_checkpoint_scale_y = 1.0
+	_total_death = 0
+	_cleartime = 0
+	_cleartime_accum = 0.0
+	if _total_death_label != null:
+		_total_death_label.text = "0"
+	if _clear_time_label != null:
+		_clear_time_label.text = Game._format_ticks(0)
+	var clear_particles := $UI/Hud/ClearParticle as CPUParticles2D
+	if clear_particles != null:
+		clear_particles.emitting = false
+		clear_particles.restart()
+	_respawn()
+
+func _set_clear_overlay(enabled: bool) -> void:
+	if clear_dim != null:
+		clear_dim.visible = enabled
+		clear_dim.color = Color(0, 0, 0, 0.6) if enabled else Color(0, 0, 0, 0)
+		clear_dim.mouse_filter = Control.MOUSE_FILTER_STOP if enabled else Control.MOUSE_FILTER_IGNORE
+	if clear_panel != null:
+		clear_panel.visible = enabled
+
+func _get_clear_panel_size() -> Vector2:
+	if clear_panel == null:
+		return Vector2.ZERO
+	var size := clear_panel.get_combined_minimum_size()
+	if size == Vector2.ZERO:
+		size = clear_panel.size
+	return size
+
+func _get_clear_panel_center() -> Vector2:
+	var view_size := get_viewport_rect().size
+	var panel_size := _get_clear_panel_size()
+	return (view_size - panel_size) * 0.5
+
+func _play_clear_panel_anim() -> void:
+	if clear_panel == null:
+		return
+	clear_panel.visible = true
+	var center := _get_clear_panel_center()
+	var start := center + Vector2(0, 160)
+	clear_panel.position = start
+	if _clear_panel_tween != null:
+		_clear_panel_tween.kill()
+	_clear_panel_tween = create_tween()
+	_clear_panel_tween.tween_property(clear_panel, "position", center, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _reset_player_velocity() -> void:
 	if player == null:
@@ -538,15 +623,19 @@ func _reset_player_velocity() -> void:
 func _update_checkpoint_on_first_step() -> void:
 	if not _awaiting_first_step:
 		return
+	if _respawning or _map_cleared:
+		return
 	if player == null or current_chunk == null:
 		return
 	if current_chunk.id != _pending_chunk_id:
 		return
+	if player.editor_mode:
+		return
 	if not player.is_on_floor():
 		return
-	var foot_tile := _world_to_tile(player.global_position) + Vector2i(0, 1)
-	var spawn_tile := foot_tile + Vector2i(0, -1)
-	_checkpoint_pos = Vector2(spawn_tile) * MapData.TILE_SIZE
+	_checkpoint_pos = player.global_position
+	_checkpoint_up_dir = player.up_direction
+	_checkpoint_scale_y = player.scale.y
 	_has_checkpoint = true
 	_awaiting_first_step = false
 
@@ -628,6 +717,8 @@ func _on_pause_respawn() -> void:
 
 func _on_pause_restart() -> void:
 	_has_checkpoint = false
+	_checkpoint_up_dir = Vector2.UP
+	_checkpoint_scale_y = 1.0
 	_set_paused(false)
 	_respawn()
 	_cleartime = 0
@@ -682,6 +773,12 @@ func _set_player_sprite_alpha(alpha: float) -> void:
 	var color := sprite.modulate
 	color.a = clampf(alpha, 0.0, 1.0)
 	sprite.modulate = color
+
+func _apply_checkpoint_gravity() -> void:
+	if player == null:
+		return
+	player.up_direction = _checkpoint_up_dir
+	player.scale.y = _checkpoint_scale_y
 
 func _setup_network() -> void:
 	if Game.current_map_id == "" or Game.is_tutorial_map_path(map_path) or Game.is_tutorial_map_path(Game.current_map_path):
@@ -747,6 +844,7 @@ func _on_chat_message(peer_id: String, text: String) -> void:
 	if target == null:
 		target = _spawn_ghost(pid, _cached_name(pid))
 	_add_chat_bubble(target, text)
+	_play_chat_sfx()
 	_ensure_name_async(pid)
 
 

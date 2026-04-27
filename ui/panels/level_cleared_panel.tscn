@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://c58h4ogpvhntm"]
+[gd_scene load_steps=7 format=3 uid="uid://c58h4ogpvhntm"]
 
 [ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_n3mk6"]
 [ext_resource type="PackedScene" uid="uid://dli2pb8ippthn" path="res://ui/button_big.tscn" id="2_fcgrq"]
-[ext_resource type="Texture2D" uid="uid://bnx46a8gicymf" path="res://graphics/ui/16px/check.png" id="3_2wjs2"]
+[ext_resource type="Texture2D" uid="uid://cx77y3vqx6cld" path="res://graphics/ui/16px/retry.png" id="3_2wjs2"]
+[ext_resource type="Texture2D" uid="uid://bnx46a8gicymf" path="res://graphics/ui/16px/check.png" id="4_2wjs2"]
 [ext_resource type="Texture2D" uid="uid://b4v5ol2j3hr8o" path="res://graphics/ui/8px/death.png" id="4_bnodj"]
 [ext_resource type="Texture2D" uid="uid://ctd672p5crq2a" path="res://graphics/ui/8px/flag.png" id="5_njmjo"]
 
@@ -14,7 +15,7 @@ theme = ExtResource("1_n3mk6")
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 0
 offset_right = 120.0
-offset_bottom = 99.0
+offset_bottom = 133.0
 
 [node name="Header" type="Label" parent="Panel"]
 layout_mode = 0
@@ -24,6 +25,19 @@ offset_right = 95.0
 offset_bottom = 17.0
 text = "level compeleted!"
 
+[node name="RetryButton" parent="Panel" instance=ExtResource("2_fcgrq")]
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 31.0
+offset_top = 64.0
+offset_right = 55.0
+offset_bottom = 88.0
+icon_texture = ExtResource("3_2wjs2")
+
 [node name="IconButton" parent="Panel" instance=ExtResource("2_fcgrq")]
 layout_mode = 1
 anchors_preset = 0
@@ -31,11 +45,11 @@ anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_left = 48.0
-offset_top = 67.0
-offset_right = 72.0
-offset_bottom = 91.0
-icon_texture = ExtResource("3_2wjs2")
+offset_left = 73.0
+offset_top = 64.0
+offset_right = 97.0
+offset_bottom = 88.0
+icon_texture = ExtResource("4_2wjs2")
 
 [node name="TotalDeath" type="Label" parent="Panel"]
 layout_mode = 0

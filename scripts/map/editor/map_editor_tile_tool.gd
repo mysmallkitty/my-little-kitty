@@ -80,6 +80,12 @@ func paint_end() -> void:
 func apply_paint_at_mouse() -> void:
 	if not is_painting:
 		return
+	if rect_active:
+		var new_end = editor._get_mouse_tile()
+		if new_end != rect_end:
+			rect_end = new_end
+			editor.queue_tick_sfx()
+		return
 	_apply_paint_at_mouse()
 
 func update_preview() -> void:
@@ -156,8 +162,20 @@ func _apply_paint(tile_pos: Vector2i, erase: bool) -> void:
 		return
 	var local_pos := tile_pos
 	if erase:
-		_erase_topmost_at(local_pos)
+		var removed := _erase_topmost_at(local_pos)
+		if removed:
+			editor.queue_remove_sfx()
 		return
+	var should_play := true
+	match selected_layer:
+		"object":
+			should_play = selected_scene_path != ""
+		"terrain", "block", "hazard", "deco":
+			should_play = selected_source_id != TileCatalog.INVALID_SOURCE
+		_:
+			should_play = false
+	if should_play:
+		editor.queue_place_sfx()
 
 	match selected_layer:
 		"object":
@@ -218,24 +236,26 @@ func _apply_paint(tile_pos: Vector2i, erase: bool) -> void:
 		_:
 			return
 
-func _erase_topmost_at(local_pos: Vector2i) -> void:
+func _erase_topmost_at(local_pos: Vector2i) -> bool:
 	var object_entries: Array = editor.map_data.layers.get("object", [])
 	if editor._remove_entry_at(object_entries, local_pos):
 		editor.map_data.layers["object"] = object_entries
 		_update_renderer_scene(local_pos, {})
-		return
+		return true
 	if _tile_layer_has_cell("deco", local_pos):
 		_update_renderer_tile("deco", local_pos, {})
-		return
+		return true
 	if _tile_layer_has_cell("block", local_pos):
 		_update_renderer_tile("block", local_pos, {})
-		return
+		return true
 	if _tile_layer_has_cell("terrain", local_pos):
 		_update_renderer_terrain(local_pos, TileCatalog.INVALID_SOURCE)
 		_mark_terrain_dirty(local_pos)
-		return
+		return true
 	if _tile_layer_has_cell("hazard", local_pos):
 		_update_renderer_tile("hazard", local_pos, {})
+		return true
+	return false
 
 func _update_renderer_tile(layer_name: String, world_pos: Vector2i, entry: Dictionary) -> void:
 	if editor.renderer == null:

@@ -10,20 +10,25 @@ signal peer_death(peer_id: String)
 signal chat_message(peer_id: String, text: String)
 
 const TPS := 20.0
+const MAX_OUTBOX := 50
+const MAX_SEND_PER_TICK := 10
 
 var _peer: WebSocketPeer = WebSocketPeer.new()
 var _map_id: String = ""
 var _player_id: String = ""
 var _url: String = ""
-var _ready := false
+var _ws_ready := false
 var _pending_queue: Array[String] = []
 var _known_peers := {}
+
+func _ready() -> void:
+	set_process(true)
 
 func connect_map(map_id: String, player_id: String, _nickname: String = "") -> void:
 	_map_id = str(map_id)
 	_player_id = _normalize_peer_id(str(player_id))
 	_url = _build_ws_url(_map_id)
-	_ready = false
+	_ws_ready = false
 	_pending_queue.clear()
 	_known_peers.clear()
 	if _url == "":
@@ -37,23 +42,25 @@ func _process(_delta: float) -> void:
 	_peer.poll()
 	var state := _peer.get_ready_state()
 	if state == WebSocketPeer.STATE_CLOSED:
-		if _ready:
-			_ready = false
+		if _ws_ready:
+			_ws_ready = false
 			disconnected.emit()
 		return
 	if state == WebSocketPeer.STATE_CONNECTING:
 		return
 	if state == WebSocketPeer.STATE_OPEN:
-		if not _ready:
-			_ready = true
+		if not _ws_ready:
+			_ws_ready = true
 			connected.emit()
-		for msg in _pending_queue:
-			_send_raw(msg)
-		_pending_queue.clear()
+		var sent := 0
+		while _pending_queue.size() > 0 and sent < MAX_SEND_PER_TICK:
+			var msg = _pending_queue.pop_front()
+			_peer.send_text(msg)
+			sent += 1
 		_poll_packets()
 
 func send_state(pos: Vector2, dir: float = 0.0) -> void:
-	if not _ready:
+	if not _ws_ready:
 		return
 	_send_json({
 		"type": "position",
@@ -61,7 +68,7 @@ func send_state(pos: Vector2, dir: float = 0.0) -> void:
 	})
 
 func send_death(dir: float = 0.0) -> void:
-	if not _ready:
+	if not _ws_ready:
 		return
 	_send_json({
 		"type": "death",
@@ -69,7 +76,7 @@ func send_death(dir: float = 0.0) -> void:
 	})
 
 func send_clear(clear_time: int, deaths: int) -> void:
-	if not _ready:
+	if not _ws_ready:
 		return
 	_send_json({
 		"type": "clear",
@@ -78,7 +85,7 @@ func send_clear(clear_time: int, deaths: int) -> void:
 	})
 
 func send_chat(text: String) -> void:
-	if not _ready:
+	if not _ws_ready:
 		return
 	if text.strip_edges() == "":
 		return
@@ -90,11 +97,11 @@ func send_chat(text: String) -> void:
 func close() -> void:
 	if _peer.get_ready_state() == WebSocketPeer.STATE_OPEN:
 		_peer.close(1000, "bye")
-	_ready = false
+	_ws_ready = false
 	_known_peers.clear()
 
 func is_ready() -> bool:
-	return _ready
+	return _ws_ready
 
 func _poll_packets() -> void:
 	while _peer.get_available_packet_count() > 0:
@@ -157,10 +164,9 @@ func _send_json(data: Dictionary) -> void:
 	_send_raw(text)
 
 func _send_raw(text: String) -> void:
-	if _peer.get_ready_state() != WebSocketPeer.STATE_OPEN:
-		_pending_queue.append(text)
-		return
-	_peer.send_text(text)
+	_pending_queue.append(text)
+	if _pending_queue.size() > MAX_OUTBOX:
+		_pending_queue.pop_front()
 
 func _build_ws_url(map_id: String) -> String:
 	var mid = int(map_id)

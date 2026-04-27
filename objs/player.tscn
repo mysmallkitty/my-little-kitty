@@ -72,7 +72,7 @@ color_ramp = SubResource("Gradient_e0qph")
 
 [node name="ChatContainer" type="VBoxContainer" parent="."]
 offset_left = -38.0
-offset_top = -107.0
+offset_top = -557.0
 offset_right = 40.0
 offset_bottom = -7.0
 theme = ExtResource("4_a3i47")

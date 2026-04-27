@@ -5,31 +5,22 @@ extends Control
 @onready var level_label: Label = $Level
 @onready var profile_picture: TextureRect = $ProfilePicture
 @onready var rank_icon: TextureRect = $SkillRank
-@onready var player_sprite_button: BaseButton = $PlayerSpriteButton
 
 func _ready() -> void:
 	add_to_group("profile_panels")
-	_connect_buttons()
 	refresh_from_api()
 
-func _connect_buttons() -> void:
-	if player_sprite_button != null and not player_sprite_button.pressed.is_connected(_on_player_sprite_pressed):
-		player_sprite_button.pressed.connect(_on_player_sprite_pressed)
 
 func refresh_from_api() -> void:
 	var me := _get_me_data()
 	if me.is_empty():
 		set_profile("click here to login", 0, null, null, false)
-		if player_sprite_button != null:
-			player_sprite_button.visible = false
 		return
 	var username := str(me.get("username", "guest"))
 	var level := int(me.get("level", 1))
 	var sprite_code := str(me.get("profile_sprite", ""))
 	var tex := Game.get_profile_texture(sprite_code)
 	set_profile(username, level, tex, null, false)
-	if player_sprite_button != null:
-		player_sprite_button.visible = _is_supporter(me)
 
 func set_profile(username: String, level: int, picture: Texture2D, rank_texture: Texture2D, show_rank: bool) -> void:
 	if username_label != null:

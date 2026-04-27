@@ -13,13 +13,14 @@ func _ready() -> void:
 	if _close_button != null and not _close_button.pressed.is_connected(_on_close_pressed):
 		_close_button.pressed.connect(_on_close_pressed)
 
-func set_stats(total_attempts: int, total_deaths: int, best_time: String) -> void:
+func set_stats(total_attempts: int, total_deaths: int, best_time: String, pp: int) -> void:
 	if _play_count != null:
 		_play_count.text = str(int(total_attempts))
 	if _death_count != null:
 		_death_count.text = str(int(total_deaths))
 	if _best_time != null:
-		_best_time.text = best_time if best_time != "" or null else "--:--"
+		var time_text := best_time if best_time != "" else "--:--"
+		_best_time.text = "%s (%dpp)" % [time_text, int(pp)]
 
 func _on_close_pressed() -> void:
 	close_pressed.emit()

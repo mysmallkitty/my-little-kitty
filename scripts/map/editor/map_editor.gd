@@ -14,6 +14,10 @@ const ICON_CHUNK_ADD := preload("res://graphics/ui/16px/editor/tools/chunk_add.p
 const ICON_CHUNK_REMOVE := preload("res://graphics/ui/16px/editor/tools/chunk_remove.png")
 const ICON_BACK := preload("res://graphics/ui/16px/nav_prev.png")
 const BACKGROUND_CATALOG := preload("res://scripts/map/editor/background_catalog.gd")
+const SFX_PLACE := preload("res://audio/place_tile.wav")
+const SFX_REMOVE := preload("res://audio/remove_tile.wav")
+const SFX_UNDO := preload("res://audio/undo.wav")
+const SFX_TICK := preload("res://audio/tick.wav")
 
 const CHUNK_HANDLE_SIZE := 6.0
 const CHUNK_HANDLE_HIT := 10.0
@@ -90,6 +94,13 @@ var _bg_index := 0
 var inspector_text: LineEdit
 var inspector_entry_index := -1
 var inspector_entry_pos := Vector2i.ZERO
+var _place_sfx: AudioStreamPlayer
+var _remove_sfx: AudioStreamPlayer
+var _undo_sfx: AudioStreamPlayer
+var _tick_sfx: AudioStreamPlayer
+var _queued_place_sfx := 0
+var _queued_remove_sfx := 0
+var _queued_tick_sfx := 0
 
 func _ready() -> void:
 	process_priority = 20
@@ -100,6 +111,7 @@ func _ready() -> void:
 	_setup_renderer()
 	_setup_preview_layer()
 	_setup_tools()
+	_setup_editor_sfx()
 	_setup_spawn()
 	_connect_ui()
 	_build_palette()
@@ -111,6 +123,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if tile_tool != null and active_tool != Tool.CURSOR:
 		tile_tool.update_preview()
+	_flush_editor_sfx()
 	_update_background_layout()
 	if _renderer_dirty:
 		_renderer_dirty = false
@@ -1084,12 +1097,27 @@ func _on_tile_button_pressed(prefix: String, source_id: int, atlas_coords: Vecto
 	if tile_tool == null:
 		return
 	tile_tool.select_tile(prefix, source_id, atlas_coords)
+	_switch_to_pen_from_palette()
 
 
 func _on_scene_button_pressed(scene_path: String) -> void:
 	if tile_tool == null:
 		return
 	tile_tool.select_scene(scene_path)
+	_switch_to_pen_from_palette()
+
+func _switch_to_pen_from_palette() -> void:
+	if active_tool != Tool.CURSOR and not chunk_edit_mode:
+		return
+	if chunk_tool != null:
+		chunk_tool.set_edit_mode(false)
+	if chunk_toggle != null:
+		chunk_toggle.button_pressed = false
+	_set_active_tool(Tool.PEN)
+	if tile_tool != null:
+		tile_tool.set_tool(Tool.PEN)
+	if pen_button != null:
+		pen_button.button_pressed = true
 
 func _save_map() -> void:
 	Game.ensure_dirs()
@@ -1152,6 +1180,65 @@ func _undo() -> void:
 	_sync_start_chunk_from_spawn()
 	_refresh_renderer()
 	_update_chunk_ui()
+	_play_undo_sfx()
+
+func _setup_editor_sfx() -> void:
+	if _place_sfx == null:
+		_place_sfx = AudioStreamPlayer.new()
+		_place_sfx.bus = "sfx"
+		_place_sfx.stream = SFX_PLACE
+		add_child(_place_sfx)
+	if _remove_sfx == null:
+		_remove_sfx = AudioStreamPlayer.new()
+		_remove_sfx.bus = "sfx"
+		_remove_sfx.stream = SFX_REMOVE
+		add_child(_remove_sfx)
+	if _undo_sfx == null:
+		_undo_sfx = AudioStreamPlayer.new()
+		_undo_sfx.bus = "sfx"
+		_undo_sfx.stream = SFX_UNDO
+		add_child(_undo_sfx)
+	if _tick_sfx == null:
+		_tick_sfx = AudioStreamPlayer.new()
+		_tick_sfx.bus = "sfx"
+		_tick_sfx.stream = SFX_TICK
+		add_child(_tick_sfx)
+
+func play_place_sfx() -> void:
+	if _place_sfx != null:
+		_place_sfx.play()
+
+func play_remove_sfx() -> void:
+	if _remove_sfx != null:
+		_remove_sfx.play()
+
+func _play_undo_sfx() -> void:
+	if _undo_sfx != null:
+		_undo_sfx.play()
+
+func play_tick_sfx() -> void:
+	if _tick_sfx != null:
+		_tick_sfx.play()
+
+func queue_place_sfx() -> void:
+	_queued_place_sfx += 1
+
+func queue_remove_sfx() -> void:
+	_queued_remove_sfx += 1
+
+func queue_tick_sfx() -> void:
+	_queued_tick_sfx += 1
+
+func _flush_editor_sfx() -> void:
+	if _queued_place_sfx > 0:
+		play_place_sfx()
+	if _queued_remove_sfx > 0:
+		play_remove_sfx()
+	if _queued_tick_sfx > 0:
+		play_tick_sfx()
+	_queued_place_sfx = 0
+	_queued_remove_sfx = 0
+	_queued_tick_sfx = 0
 
 func _make_chunk_id() -> String:
 	var rng := RandomNumberGenerator.new()

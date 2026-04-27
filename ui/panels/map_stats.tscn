@@ -20,7 +20,7 @@ script = ExtResource("1_popup")
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 0
 offset_right = 104.0
-offset_bottom = 56.0
+offset_bottom = 67.0
 
 [node name="Header" type="Label" parent="Panel"]
 layout_mode = 0
@@ -64,7 +64,7 @@ offset_left = 18.0
 offset_top = 42.0
 offset_right = 96.0
 offset_bottom = 51.0
-text = "00:00"
+text = "00:00:00 (0pp)"
 
 [node name="CloseButton" parent="Panel" instance=ExtResource("5_665uh")]
 unique_name_in_owner = true

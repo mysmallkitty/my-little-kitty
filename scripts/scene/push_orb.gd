@@ -1,6 +1,7 @@
 extends Orb
 
 func _orb_func(body:Player):
+	body._end_dash(false)
 	if global_rotation_degrees < 45 and global_rotation_degrees > -45:
 		body._vel = Vector2(0,-200)
 	elif global_rotation_degrees < 180 and global_rotation_degrees > 10:

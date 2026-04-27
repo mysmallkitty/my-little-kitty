@@ -1,10 +1,25 @@
-[gd_scene load_steps=6 format=3 uid="uid://b8llssoxm42cr"]
+[gd_scene load_steps=21 format=3 uid="uid://b8llssoxm42cr"]
 
+[ext_resource type="Script" uid="uid://drurwlcgi7njt" path="res://scripts/ui/kittynet.gd" id="1_kittynet"]
 [ext_resource type="Theme" uid="uid://d3qrjbdprxnyr" path="res://ui/theme/theme.tres" id="1_yo7qf"]
 [ext_resource type="PackedScene" uid="uid://dli2pb8ippthn" path="res://ui/button_big.tscn" id="2_lpbbo"]
 [ext_resource type="Texture2D" uid="uid://cvsm2biosg2mh" path="res://graphics/ui/8px/simple/user.png" id="3_6b3gk"]
 [ext_resource type="Texture2D" uid="uid://r283sjscesrm" path="res://graphics/ui/8px/crown.png" id="4_0nrg8"]
 [ext_resource type="PackedScene" uid="uid://cak20fbe3l4fn" path="res://ui/kittynet/user_panel.tscn" id="5_6b3gk"]
+[ext_resource type="Texture2D" uid="uid://62iipdp8064g" path="res://graphics/ui/8px/simple/back.png" id="6_0nrg8"]
+[ext_resource type="Texture2D" uid="uid://c437bfd814cs6" path="res://graphics/ui/16px/user_signed.png" id="7_hrojb"]
+[ext_resource type="Texture2D" uid="uid://cpk27xsn6up2w" path="res://graphics/ui/16px/search.png" id="7_u5qwo"]
+[ext_resource type="Texture2D" uid="uid://6ctusqubd3bi" path="res://graphics/ui/flags/kr.png" id="8_0vvkv"]
+[ext_resource type="Texture2D" uid="uid://bgfh6yxigm8lj" path="res://graphics/ui/8px/ranks/5.png" id="9_rjhdo"]
+[ext_resource type="Texture2D" uid="uid://dwlfytf3pw08i" path="res://graphics/ui/8px/play.png" id="11_bjijc"]
+[ext_resource type="Texture2D" uid="uid://ctd672p5crq2a" path="res://graphics/ui/8px/flag.png" id="12_8xyx8"]
+[ext_resource type="Texture2D" uid="uid://b4v5ol2j3hr8o" path="res://graphics/ui/8px/death.png" id="13_wpg3q"]
+[ext_resource type="Texture2D" uid="uid://dk1kne37x0h03" path="res://graphics/ui/8px/calander.png" id="14_w5ma2"]
+[ext_resource type="PackedScene" uid="uid://doqsgsvd3lpa2" path="res://ui/button_small.tscn" id="15_w5ma2"]
+[ext_resource type="Texture2D" uid="uid://dduewke7hh8oi" path="res://graphics/ui/8px/net.png" id="16_1gyf1"]
+[ext_resource type="AudioStream" uid="uid://c6yn55me6x205" path="res://audio/click.wav" id="17_6qpga"]
+[ext_resource type="Texture2D" uid="uid://cbjiccv4nde5x" path="res://graphics/ui/8px/simple/x.png" id="19_6qpga"]
+[ext_resource type="PackedScene" uid="uid://4k4nwwndp57" path="res://ui/kittynet/loading.tscn" id="20_mepct"]
 
 [node name="Kittynet" type="Control"]
 layout_mode = 3
@@ -14,13 +29,77 @@ offset_right = 0.07998657
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_yo7qf")
+script = ExtResource("1_kittynet")
+dim_path = NodePath("../Dim")
 
 [node name="Panel" type="Panel" parent="."]
 layout_mode = 0
 offset_right = 297.0
 offset_bottom = 179.0
 
-[node name="MyPage" parent="Panel" instance=ExtResource("2_lpbbo")]
+[node name="MainPage" type="Control" parent="Panel"]
+visible = false
+anchors_preset = 0
+offset_right = 298.0
+offset_bottom = 179.0
+
+[node name="Header" type="Label" parent="Panel/MainPage"]
+layout_mode = 0
+offset_left = 124.0
+offset_top = 11.0
+offset_right = 170.0
+offset_bottom = 18.0
+text = "world kittys"
+
+[node name="SearchPlayers" type="LineEdit" parent="Panel/MainPage"]
+layout_mode = 0
+offset_left = 26.0
+offset_top = 25.0
+offset_right = 270.0
+offset_bottom = 32.0
+placeholder_text = "search players"
+
+[node name="PlayersScroll" type="ScrollContainer" parent="Panel/MainPage"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 41.0
+offset_right = 280.0
+offset_bottom = 168.0
+
+[node name="Players" type="GridContainer" parent="Panel/MainPage/PlayersScroll"]
+clip_contents = true
+layout_direction = 2
+layout_mode = 2
+columns = 2
+
+[node name="UserPanel" parent="Panel/MainPage/PlayersScroll/Players" instance=ExtResource("5_6b3gk")]
+layout_mode = 2
+
+[node name="MyPage" parent="Panel/MainPage" instance=ExtResource("15_w5ma2")]
+layout_mode = 0
+offset_left = 11.0
+offset_top = 4.0
+offset_right = 27.0
+offset_bottom = 20.0
+icon_texture = ExtResource("3_6b3gk")
+click_sound = ExtResource("17_6qpga")
+
+[node name="GlobalRank" parent="Panel/MainPage" instance=ExtResource("15_w5ma2")]
+layout_mode = 0
+offset_left = 34.0
+offset_top = 4.0
+offset_right = 50.0
+offset_bottom = 20.0
+icon_texture = ExtResource("4_0nrg8")
+click_sound = ExtResource("17_6qpga")
+
+[node name="UserPage" type="Control" parent="Panel"]
+visible = false
+anchors_preset = 0
+offset_right = 297.0
+offset_bottom = 179.0
+
+[node name="Back" parent="Panel/UserPage" instance=ExtResource("2_lpbbo")]
 layout_mode = 1
 anchors_preset = 0
 anchor_left = 0.0
@@ -31,46 +110,238 @@ offset_left = 16.0
 offset_top = 144.0
 offset_right = 40.0
 offset_bottom = 168.0
-icon_texture = ExtResource("3_6b3gk")
+icon_texture = ExtResource("6_0nrg8")
 
-[node name="GlobalRank" parent="Panel" instance=ExtResource("2_lpbbo")]
+[node name="Username" type="Label" parent="Panel/UserPage"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 0
+offset_left = 33.0
+offset_top = 39.0
+offset_right = 62.0
+offset_bottom = 47.0
+text = "h4yase"
+
+[node name="Rank" type="Label" parent="Panel/UserPage"]
+layout_mode = 0
+offset_left = 33.0
+offset_top = 31.0
+offset_right = 278.0
+offset_bottom = 38.0
+text = "#0"
+
+[node name="ProfilePicture" type="TextureRect" parent="Panel/UserPage"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 30.0
+offset_right = 30.0
+offset_bottom = 46.0
+texture = ExtResource("7_hrojb")
+
+[node name="Country" type="TextureRect" parent="Panel/UserPage"]
+layout_mode = 0
+offset_left = 14.0
+offset_top = 18.0
+offset_right = 29.0
+offset_bottom = 28.0
+scale = Vector2(1.0666666, 1)
+texture = ExtResource("8_0vvkv")
+
+[node name="PPRank" type="TextureRect" parent="Panel/UserPage"]
+layout_mode = 0
+offset_left = 17.0
+offset_top = 48.0
+offset_right = 25.0
+offset_bottom = 56.0
+texture = ExtResource("9_rjhdo")
+
+[node name="Label" type="Label" parent="Panel/UserPage"]
+layout_mode = 0
+offset_left = 30.0
+offset_top = 49.0
+offset_right = 60.0
+offset_bottom = 56.0
+text = "0pp"
+
+[node name="RecordRow" type="Control" parent="Panel/UserPage"]
+clip_contents = true
+anchors_preset = 0
+offset_left = 17.0
+offset_top = 64.0
+offset_right = 288.0
+offset_bottom = 144.0
+
+[node name="RecordRow" type="Panel" parent="Panel/UserPage/RecordRow"]
+layout_mode = 0
+offset_left = 21.0
+offset_top = 1.0
+offset_right = 248.0
+offset_bottom = 18.0
+
+[node name="TitleCreator" type="Label" parent="Panel/UserPage/RecordRow/RecordRow"]
+layout_mode = 0
+offset_left = 6.0
+offset_top = 5.0
+offset_right = 46.0
+offset_bottom = 12.0
+text = "title - creator"
+
+[node name="PP" type="Label" parent="Panel/UserPage/RecordRow/RecordRow"]
+layout_mode = 0
+offset_left = 174.0
+offset_top = 5.0
+offset_right = 220.0
+offset_bottom = 12.0
+text = "20pp"
+horizontal_alignment = 2
+
+[node name="Label" type="Label" parent="Panel/UserPage/RecordRow/RecordRow"]
+layout_mode = 0
+offset_left = -14.0
+offset_top = 5.0
+offset_right = -1.0
+offset_bottom = 12.0
+text = "1"
+horizontal_alignment = 1
+
+[node name="Play" type="Sprite2D" parent="Panel/UserPage"]
+position = Vector2(196, 27)
+texture = ExtResource("11_bjijc")
+
+[node name="PlayCount" type="Label" parent="Panel/UserPage"]
+layout_mode = 0
+offset_left = 202.0
+offset_top = 24.0
+offset_right = 256.0
+offset_bottom = 31.0
+theme_override_font_sizes/font_size = 7
+text = "0"
+clip_text = true
+
+[node name="ClearedCount" type="Label" parent="Panel/UserPage"]
+layout_mode = 0
+offset_left = 202.0
+offset_top = 36.0
+offset_right = 256.0
+offset_bottom = 43.0
+theme_override_font_sizes/font_size = 7
+text = "0"
+clip_text = true
+
+[node name="DeathCount" type="Label" parent="Panel/UserPage"]
+layout_mode = 0
+offset_left = 202.0
+offset_top = 48.0
+offset_right = 256.0
+offset_bottom = 55.0
+theme_override_font_sizes/font_size = 7
+text = "0"
+clip_text = true
+
+[node name="JoinDate" type="Label" parent="Panel/UserPage"]
+layout_mode = 0
+offset_left = 43.0
+offset_top = 20.0
+offset_right = 96.0
+offset_bottom = 27.0
+theme_override_font_sizes/font_size = 7
+text = "2000-01-01"
+clip_text = true
+
+[node name="Flag" type="Sprite2D" parent="Panel/UserPage"]
+position = Vector2(196, 39)
+texture = ExtResource("12_8xyx8")
+
+[node name="Death" type="Sprite2D" parent="Panel/UserPage"]
+position = Vector2(196, 51)
+texture = ExtResource("13_wpg3q")
+
+[node name="Calander" type="Sprite2D" parent="Panel/UserPage"]
+position = Vector2(37, 23)
+texture = ExtResource("14_w5ma2")
+
+[node name="LeaderBoard" type="Control" parent="Panel"]
+anchors_preset = 0
+offset_right = 298.0
+offset_bottom = 179.0
+
+[node name="Header" type="Label" parent="Panel/LeaderBoard"]
+layout_mode = 0
+offset_left = 124.0
+offset_top = 14.0
+offset_right = 174.0
+offset_bottom = 21.0
+text = "leaderboard"
+
+[node name="PlayersScroll" type="ScrollContainer" parent="Panel/LeaderBoard"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 33.0
+offset_right = 280.0
+offset_bottom = 170.0
+
+[node name="Players" type="GridContainer" parent="Panel/LeaderBoard/PlayersScroll"]
+clip_contents = true
+layout_direction = 2
+layout_mode = 2
+columns = 2
+
+[node name="UserPanel" parent="Panel/LeaderBoard/PlayersScroll/Players" instance=ExtResource("5_6b3gk")]
+layout_mode = 2
+
+[node name="Back" parent="Panel/LeaderBoard" instance=ExtResource("2_lpbbo")]
 layout_mode = 1
 anchors_preset = 0
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 0.0
 anchor_bottom = 0.0
-offset_left = 48.0
+offset_left = 16.0
 offset_top = 144.0
-offset_right = 72.0
+offset_right = 40.0
 offset_bottom = 168.0
-icon_texture = ExtResource("4_0nrg8")
+icon_texture = ExtResource("6_0nrg8")
 
-[node name="Players" type="GridContainer" parent="Panel"]
-clip_contents = true
-layout_direction = 2
+[node name="Search(WIP)" parent="Panel/LeaderBoard" instance=ExtResource("2_lpbbo")]
+visible = false
+layout_mode = 1
+anchors_preset = 0
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 264.0
+offset_top = 6.0
+offset_right = 288.0
+offset_bottom = 30.0
+icon_texture = ExtResource("7_u5qwo")
+
+[node name="Crown" type="Sprite2D" parent="Panel/LeaderBoard"]
+position = Vector2(148, 8)
+texture = ExtResource("4_0nrg8")
+
+[node name="SwitchRegion(WIP)" parent="Panel/LeaderBoard" instance=ExtResource("15_w5ma2")]
+visible = false
 layout_mode = 0
-offset_left = 10.0
-offset_top = 33.0
-offset_right = 256.0
-offset_bottom = 128.0
-columns = 2
+offset_left = 9.0
+offset_top = 6.0
+offset_right = 25.0
+offset_bottom = 22.0
+icon_texture = ExtResource("16_1gyf1")
+click_sound = ExtResource("17_6qpga")
 
-[node name="UserPanel" parent="Panel/Players" instance=ExtResource("5_6b3gk")]
-layout_mode = 2
-
-[node name="LineEdit" type="LineEdit" parent="Panel"]
+[node name="Close" parent="Panel" instance=ExtResource("15_w5ma2")]
 layout_mode = 0
-offset_left = 18.0
-offset_top = 17.0
-offset_right = 278.0
-offset_bottom = 24.0
-placeholder_text = "search players"
+offset_left = 277.0
+offset_top = 4.0
+offset_right = 293.0
+offset_bottom = 20.0
+icon_texture = ExtResource("19_6qpga")
+click_sound = ExtResource("17_6qpga")
 
-[node name="Label" type="Label" parent="Panel"]
+[node name="Loading" parent="Panel" instance=ExtResource("20_mepct")]
+visible = false
 layout_mode = 0
-offset_left = 136.0
-offset_top = 7.0
-offset_right = 176.0
-offset_bottom = 14.0
-text = "world kittys"
+offset_left = 128.0
+offset_top = 74.0
+offset_right = 168.0
+offset_bottom = 114.0
